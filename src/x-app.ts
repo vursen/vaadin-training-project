@@ -1,16 +1,16 @@
 import { LitElement, html, customElement } from 'lit-element';
 
-import './components/my-layout.js'
+import './components/x-layout.js'
 
-@customElement('my-app')
-export class MyApp extends LitElement {
+@customElement('x-app')
+export class XApp extends LitElement {
   render () {
     return html`
-      <my-layout>
+      <x-layout>
         <div class="content">
           My Layout Content
         </div>
-      </my-layout>
+      </x-layout>
     `;
   }
 }

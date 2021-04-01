@@ -1,13 +1,13 @@
 import { html, fixture, expect } from '@open-wc/testing';
 
-import '../src/my-app.js';
-import { MyApp } from '../src/my-app.js';
+import '../src/x-app.js';
+import { XApp } from '../src/x-app.js';
 
-describe('MyApp', () => {
-  let element: MyApp;
+describe('XApp', () => {
+  let element: XApp;
 
   beforeEach(async () => {
-    element = await fixture(html`<my-app></my-app>`);
+    element = await fixture(html`<x-app></x-app>`);
   });
 
   it('should render some content', () => {

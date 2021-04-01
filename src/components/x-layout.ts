@@ -2,7 +2,7 @@ import '@vaadin/vaadin-app-layout';
 
 import { LitElement, html, customElement } from 'lit-element';
 
-@customElement('my-layout')
+@customElement('x-layout')
 export class MyLayout extends LitElement {
   render () {
     return html`
