@@ -16,11 +16,10 @@ export interface IApiComponents {
 }
 
 export interface IApiComponent {
-  downloads: Array<{
-    date: string
-  } & {
-    [k: string]: number
-  }>
+  downloads: Array<
+    & { date: string }
+    & { [k: string]: number }
+  >
 }
 
 export class Api {
@@ -35,7 +34,7 @@ export class Api {
    * Fetches a detailed information about the component, including statistics of versions' downloads
    */
   fetchComponent (name: string): Promise<IApiComponent> {
-    return this.fetch(`https://github.com/web-padawan/npm-downloads/blob/master/docs/${name}.json`)
+    return this.fetch(`https://web-padawan.github.io/npm-downloads/${name}.json`)
   }
 
   // eslint-disable-next-line class-methods-use-this
