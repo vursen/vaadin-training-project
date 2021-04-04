@@ -7,7 +7,8 @@ import './pages/x-component-page.js'
 import './pages/x-not-found-page.js'
 
 const outlet = document.getElementById('outlet');
-const router = new Router(outlet);
+
+export const router = new Router(outlet);
 
 router.setRoutes([
   {

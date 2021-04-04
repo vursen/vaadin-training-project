@@ -43,11 +43,16 @@ describe('ComponentsStore', () => {
   it('should fetch component statistics', async () => {
     await store.fetchComponentStatistics('vaadin-notification')
 
+    expect(store.statistics).to.have.lengthOf(1)
+
     const component = store.statistics.get('vaadin-notification')!
 
     expect(component.downloads).to.have.lengthOf(8)
     expect(component.downloads[0].date).to.equal('08/02/2021')
-    expect(Object.keys(component.downloads[0].versions)).to.have.lengthOf(29)
+    expect(component.downloads[0].versions).to.deep.equal({
+      '20.0.0-alpha2': 0,
+      '20.0.0-alpha1': 0
+    })
   });
 
   // it('should have a getter that returns components as an array', async () => {
