@@ -1,4 +1,4 @@
-{
+export default {
   "downloads": [
     {
       "date": "08/02/2021",

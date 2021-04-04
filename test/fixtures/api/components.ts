@@ -1,4 +1,4 @@
-{
+export default {
   "core": {
     "flow": {
       "javaVersion": "7.0.0.alpha3"
