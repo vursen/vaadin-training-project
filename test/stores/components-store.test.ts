@@ -18,7 +18,7 @@ describe('ComponentsStore', () => {
       .resolves(fixtures.api.components)
 
     sandbox.stub(api, 'fetchComponentStatistics')
-      .withArgs('vaadin-notification')
+      .withArgs('vaadin-button')
       .resolves(fixtures.api.componentStatistics)
   });
 
@@ -37,21 +37,21 @@ describe('ComponentsStore', () => {
 
     expect(api.fetchComponents).to.have.been.calledOnce
 
-    expect(store.components.get('vaadin-notification')).to.deep.equal({
-      name: 'vaadin-notification',
-      npmName: '@vaadin/vaadin-notification',
+    expect(store.components.get('vaadin-button')).to.deep.equal({
+      name: 'vaadin-button',
+      npmName: '@vaadin/vaadin-button',
       version: '20.0.0-alpha3'
     })
   });
 
   it('should fetch component statistics', async () => {
-    store.fetchComponentStatistics('vaadin-notification')
+    store.fetchComponentStatistics('vaadin-button')
 
     await when(() => store.statistics.size === 1)
 
     expect(api.fetchComponentStatistics).to.have.been.calledOnce
 
-    const component = store.statistics.get('vaadin-notification')!
+    const component = store.statistics.get('vaadin-button')!
 
     expect(component.downloads).to.have.lengthOf(8)
     expect(component.downloads[0].date).to.equal('08/02/2021')
@@ -60,9 +60,4 @@ describe('ComponentsStore', () => {
       '20.0.0-alpha1': 0
     })
   });
-
-  // it('should have a getter that returns components as an array', async () => {
-  //   await store.fetchComponents()
-  //   await store.fetchComponent('vaadin-notification')
-  // })
 });
