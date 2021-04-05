@@ -8,6 +8,7 @@
     "strict": true,
     "esModuleInterop": false,
     "resolveJsonModule": true,
+    "useDefineForClassFields": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "importHelpers": true,

@@ -1,4 +1,5 @@
-import { LitElement, html, css, customElement, internalProperty } from 'lit-element'
+import { html, css, customElement, internalProperty } from 'lit-element'
+import { MobxLitElement } from '@adobe/lit-mobx'
 
 import '@vaadin/vaadin-app-layout/vaadin-app-layout'
 import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle'
@@ -6,7 +7,7 @@ import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle'
 import { componentsStore } from '../stores/components-store.js'
 
 @customElement('x-default-layout')
-export class XDefaultLayout extends LitElement {
+export class XDefaultLayout extends MobxLitElement {
   @internalProperty()
   componentsStore = componentsStore
 

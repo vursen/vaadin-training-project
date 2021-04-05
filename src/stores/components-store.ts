@@ -1,12 +1,14 @@
+import { observable, action, runInAction } from 'mobx'
+
 import { api } from '../api/index.js'
 
-export interface IStateComponent {
+export interface IComponent {
   name: string,
   npmName: string,
   version: string,
 }
 
-export interface IStateComponentStatistics {
+export interface IComponentStatistics {
   name: string,
   downloads: Array<{
     date: string,
@@ -16,53 +18,55 @@ export interface IStateComponentStatistics {
 
 export class ComponentsStore {
   /**
-   * Keeps the components as a map to access by component name
+   * Keeps the components as a map where the key is a component name
    */
-  components = new Map<
-    IStateComponent['name'],
-    IStateComponent
-  >()
+  @observable
+  components = new Map<IComponent['name'], IComponent>()
 
   /**
-   * Keeps the statistics of components as a map to access by component name
+   * Keeps the statistics of components as a map where the key is a component name
    */
-  statistics = new Map<
-    IStateComponentStatistics['name'],
-    IStateComponentStatistics
-  >()
+  @observable
+  statistics = new Map<IComponentStatistics['name'], IComponentStatistics>()
 
   /**
-   * Loads components using API into the state
+   * Fetches components using API and puts the result into the state
    */
+  @action
   async fetchComponents () {
     const { core } = await api.fetchComponents()
 
-    this.components.clear()
+    runInAction(() => {
+      this.components.clear()
 
-    Object.entries(core)
-      .filter(([_name, { component }]) => component)
-      .forEach(([name, component]) => {
-        this.components.set(name, {
-          name,
-          npmName: component.npmName!,
-          version: component.jsVersion!
+      Object.entries(core)
+        .filter(([_name, { component }]) => component)
+        .forEach(([name, component]) => {
+          this.components.set(name, {
+            name,
+            npmName: component.npmName!,
+            version: component.jsVersion!
+          })
         })
-      })
+    })
   }
 
   /**
-   * Loads the component statistics using API into the state
+   * Fetches the component statistics using API and puts the result into the state
    */
+  @action
   async fetchComponentStatistics (name: string) {
     const { downloads } = await api.fetchComponentStatistics(name)
 
-    this.statistics.set(name, {
-      name,
-      downloads: downloads.map(({ date, ...versions }) => {
-        return {
-          date,
-          versions
-        }
+    runInAction(() => {
+      this.statistics.set(name, {
+        name,
+        downloads: downloads.map(({ date, ...versions }) => {
+          return {
+            date,
+            versions
+          }
+        })
       })
     })
   }

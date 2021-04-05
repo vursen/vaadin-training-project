@@ -1,5 +1,6 @@
-import { expect } from '@open-wc/testing';
 import sinon from 'sinon'
+import { when } from 'mobx'
+import { expect } from '@open-wc/testing'
 
 import * as fixtures from '../fixtures/index.js'
 
@@ -30,9 +31,12 @@ describe('ComponentsStore', () => {
   })
 
   it('should fetch components', async () => {
-    await store.fetchComponents()
+    store.fetchComponents()
 
-    expect(store.components).to.have.lengthOf(30)
+    await when(() => store.components.size === 30)
+
+    expect(api.fetchComponents).to.have.been.calledOnce
+
     expect(store.components.get('vaadin-notification')).to.deep.equal({
       name: 'vaadin-notification',
       npmName: '@vaadin/vaadin-notification',
@@ -41,9 +45,11 @@ describe('ComponentsStore', () => {
   });
 
   it('should fetch component statistics', async () => {
-    await store.fetchComponentStatistics('vaadin-notification')
+    store.fetchComponentStatistics('vaadin-notification')
 
-    expect(store.statistics).to.have.lengthOf(1)
+    await when(() => store.statistics.size === 1)
+
+    expect(api.fetchComponentStatistics).to.have.been.calledOnce
 
     const component = store.statistics.get('vaadin-notification')!
 
