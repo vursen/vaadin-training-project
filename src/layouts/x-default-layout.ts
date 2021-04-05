@@ -1,12 +1,41 @@
-import { LitElement, html, customElement } from 'lit-element';
+import { LitElement, html, css, customElement, internalProperty } from 'lit-element'
+
+import '@vaadin/vaadin-app-layout/vaadin-app-layout'
+import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle'
+
+import { componentsStore } from '../stores/components-store.js'
 
 @customElement('x-default-layout')
 export class XDefaultLayout extends LitElement {
+  @internalProperty()
+  componentsStore = componentsStore
+
+  static get styles() {
+    return css`
+      h1 {
+        margin: 0 var(--lumo-space-s);
+        font-size: var(--lumo-font-size-l);
+      }
+    `;
+  }
+
+  async connectedCallback () {
+    super.connectedCallback?.()
+
+    await this.componentsStore.fetchComponents()
+  }
+
   render () {
     return html`
-      <div class="default-layout">
+      <vaadin-app-layout class="default-layout">
+        <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
+
+        <h1 slot="navbar">Vaadin Stats</h1>
+
+        Components Count: ${this.componentsStore.components.size}
+
         <slot></slot>
-      </div>
+      </vaadin-app-layout>
     `;
   }
 }
