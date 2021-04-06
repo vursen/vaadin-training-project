@@ -1,16 +1,16 @@
-import { html, css, customElement, internalProperty } from 'lit-element'
-import { MobxLitElement } from '@adobe/lit-mobx'
+import { html, css, customElement, internalProperty } from 'lit-element';
+import { MobxLitElement } from '@adobe/lit-mobx';
 
-import '@vaadin/vaadin-details'
-import '@vaadin/vaadin-app-layout'
-import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle'
+import '@vaadin/vaadin-details';
+import '@vaadin/vaadin-app-layout';
+import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle';
 
-import { componentsStore } from '../stores/components-store.js'
+import { componentsStore } from '../stores/components-store.js';
 
 @customElement('x-default-layout')
 export class XDefaultLayout extends MobxLitElement {
   @internalProperty()
-  componentsStore = componentsStore
+  componentsStore = componentsStore;
 
   static get styles() {
     return css`
@@ -21,21 +21,29 @@ export class XDefaultLayout extends MobxLitElement {
     `;
   }
 
-  async connectedCallback () {
-    super.connectedCallback?.()
+  async connectedCallback() {
+    super.connectedCallback();
 
-    await this.componentsStore.fetchComponents()
+    await this.componentsStore.fetchComponents();
   }
 
-  get isLoading () {
-    return this.componentsStore.components.size === 0
+  get isLoading() {
+    return this.componentsStore.components.size === 0;
   }
 
-  get components () {
-    return [...this.componentsStore.components.values()]
+  get components() {
+    return [...this.componentsStore.components.values()];
   }
 
-  render () {
+  render() {
+    const components = this.components.map(
+      component => html`
+        <li>
+          <a href="#">${component.name}</a>
+        </li>
+      `
+    );
+
     return html`
       <vaadin-app-layout class="default-layout">
         <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
@@ -48,16 +56,10 @@ export class XDefaultLayout extends MobxLitElement {
           </li>
 
           <vaadin-details>
-            <div slot="summary">
-              Components
-            </div>
+            <div slot="summary">Components</div>
 
             <ul>
-              ${this.components.map((component) => html`
-                <li>
-                  <a href="#">${component.name}</a>
-                </li>
-              `)}
+              ${components}
             </ul>
           </vaadin-details>
         </ul>

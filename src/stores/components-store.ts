@@ -1,47 +1,49 @@
-import { makeAutoObservable, runInAction } from 'mobx'
+import { makeAutoObservable, runInAction } from 'mobx';
 
-import { api } from '../api/index.js'
+import { api } from '../api/index.js';
 
 export interface IComponent {
-  name: string,
-  npmName: string,
-  version: string,
+  name: string;
+  npmName: string;
+  version: string;
 }
 
 export interface IComponentStatistics {
-  name: string,
-  downloads: Array<{
-    date: string,
-    versions: Record<string, number>
-  }>
+  name: string;
+  downloads: IComponentStatisticsDownloads[];
+}
+
+export interface IComponentStatisticsDownloads {
+  date: string;
+  versions: Record<string, number>;
 }
 
 export class ComponentsStore {
   /**
    * Keeps the components as a map where the key is a component name
    */
-  components = new Map<IComponent['name'], IComponent>()
+  components = new Map<IComponent['name'], IComponent>();
 
   /**
    * Keeps the statistics of components as a map where the key is a component name
    */
-  statistics = new Map<IComponentStatistics['name'], IComponentStatistics>()
+  statistics = new Map<IComponentStatistics['name'], IComponentStatistics>();
 
   /**
    * Constructor
    */
-  constructor () {
-    makeAutoObservable(this)
+  constructor() {
+    makeAutoObservable(this);
   }
 
   /**
    * Fetches components using API and puts the result into the state
    */
-  async fetchComponents () {
-    const { core } = await api.fetchComponents()
+  async fetchComponents() {
+    const { core } = await api.fetchComponents();
 
     runInAction(() => {
-      this.components.clear()
+      this.components.clear();
 
       Object.entries(core)
         .filter(([_name, { component }]) => component)
@@ -49,17 +51,17 @@ export class ComponentsStore {
           this.components.set(name, {
             name,
             npmName: component.npmName!,
-            version: component.jsVersion!
-          })
-        })
-    })
+            version: component.jsVersion!,
+          });
+        });
+    });
   }
 
   /**
    * Fetches the component statistics using API and puts the result into the state
    */
-  async fetchComponentStatistics (name: string) {
-    const { downloads } = await api.fetchComponentStatistics(name)
+  async fetchComponentStatistics(name: string) {
+    const { downloads } = await api.fetchComponentStatistics(name);
 
     runInAction(() => {
       this.statistics.set(name, {
@@ -67,12 +69,12 @@ export class ComponentsStore {
         downloads: downloads.map(({ date, ...versions }) => {
           return {
             date,
-            versions
-          }
-        })
-      })
-    })
+            versions,
+          };
+        }),
+      });
+    });
   }
 }
 
-export const componentsStore = new ComponentsStore()
+export const componentsStore = new ComponentsStore();
