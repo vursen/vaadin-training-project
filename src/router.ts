@@ -1,10 +1,10 @@
 import { Router } from '@vaadin/router';
 
-import './layouts/x-default-layout.js';
+import './layouts/x-default-layout';
 
-import './pages/x-home-page.js';
-import './pages/x-component-page.js';
-import './pages/x-not-found-page.js';
+import './pages/x-home-page';
+import './pages/x-component-page';
+import './pages/x-not-found-page';
 
 const outlet = document.getElementById('outlet');
 
@@ -17,10 +17,12 @@ router.setRoutes([
     children: [
       {
         path: '/',
+        name: 'home',
         component: 'x-home-page',
       },
       {
         path: '/components/:name/',
+        name: 'component',
         component: 'x-component-page',
       },
       {
