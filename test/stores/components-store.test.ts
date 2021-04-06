@@ -7,27 +7,26 @@ import { ComponentsStore } from '../../src/stores/components-store.js';
 
 import * as fixtures from '../fixtures/index.js';
 
-describe('ComponentsStore', () => {
+describe('components store', () => {
   let store: ComponentsStore;
   let sandbox: sinon.SinonSandbox;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
-
     sandbox.stub(api, 'fetchComponents').resolves(fixtures.api.components);
-
-    sandbox
-      .stub(api, 'fetchComponentStatistics')
+    sandbox.stub(api, 'fetchComponentStatistics')
       .withArgs('vaadin-button')
       .resolves(fixtures.api.componentStatistics);
   });
 
-  afterEach(() => {
-    sandbox.restore();
+  beforeEach(async () => {
+    store = new ComponentsStore({
+      api,
+    });
   });
 
-  beforeEach(async () => {
-    store = new ComponentsStore();
+  afterEach(() => {
+    sandbox.restore();
   });
 
   it('should fetch components', async () => {
