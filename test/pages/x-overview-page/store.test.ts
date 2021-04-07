@@ -41,6 +41,7 @@ describe('overview page store', () => {
   it('should aggregate the totals of items', () => {
     expect(store.items).to.be.deep.equal([
       {
+        id: 'vaadin-button',
         name: 'vaadin-button',
         total: 218,
         totalOverWeek: 146,
@@ -52,4 +53,11 @@ describe('overview page store', () => {
   // it('should aggregate the totals of items with the custom period', () => {
   //   // TODO: Implement
   // })
+
+  it('should set the selected item ids', () => {
+    store.setSelectedItemIds(['vaadin-button']);
+
+    expect(store.selectedItemIds.size).to.be.equal(1);
+    expect(store.selectedItemIds.has('vaadin-button')).to.be.true;
+  });
 });

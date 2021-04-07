@@ -21,7 +21,7 @@ export class Store {
   customPeriod = null;
 
   /**
-   * Keeps the selected items ids as a set
+   * Keeps the ids of the selected items as a set
    */
   selectedItemIds = new Set<IItem['id']>();
 
@@ -33,7 +33,7 @@ export class Store {
   }
 
   /**
-   * Saves the new selected items ids in the state
+   * Replaces the ids of the selected items with the new ones
    */
    setSelectedItemIds (selectedItemIds: IItem['id'][]) {
     this.selectedItemIds = new Set(selectedItemIds)

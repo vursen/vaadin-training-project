@@ -1,4 +1,3 @@
-import { autorun } from 'mobx';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { html, customElement, query } from 'lit-element';
 
@@ -15,31 +14,26 @@ export class XOverviewPageGrid extends MobxLitElement {
   @query('#grid')
   grid!: GridElement
 
-  async connectedCallback () {
-    super.connectedCallback()
-  }
-
-  onSelectedItemsChanged(event: GridSelectedItemsChanged) {
-    console.log(event.detail.value)
-
+  onSelectedItemsChanged(_event: GridSelectedItemsChanged) {
+    // TODO: Use `event.detail.value` instead of `this.grid.selectedItems`
+    // as soon as https://github.com/vaadin/web-components/issues/197 will be resolved
     const selectedItems = this.grid.selectedItems as Store['selectedItems']
     const selectedItemIds = selectedItems.map(({ id }) => id)
 
-    // store.setSelectedItemIds(selectedItemIds)
+    store.setSelectedItemIds(selectedItemIds)
   }
 
   render() {
-    console.log('Items', store.items)
-    console.log('Selected Items', store.selectedItems)
     return html`
       <div class="overview-page-grid">
         <vaadin-grid
           id="grid"
           .items="${store.items}"
-          .selectedItems="${store.selectedItems}"
           @selected-items-changed="${this.onSelectedItemsChanged}"
         >
-          <vaadin-grid-selection-column></vaadin-grid-selection-column>
+          <vaadin-grid-selection-column
+            select-all
+          ></vaadin-grid-selection-column>
 
           <vaadin-grid-column
             path="name"

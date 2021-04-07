@@ -7,19 +7,14 @@ import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
 import { componentsStore } from '../../stores/components-store';
 
-<<<<<<< HEAD
 import { store } from './store';
-=======
-import './x-grid';
 
-import { store } from './store';
-import { runInAction, transaction } from 'mobx';
->>>>>>> Draft the overview page grid
+import './x-grid';
 
 @customElement('x-overview-page')
 export class XOverviewPage extends MobxLitElement {
   @internalProperty()
-  isLoading = false
+  isLoading = false;
 
   static get styles() {
     return css`
@@ -32,16 +27,15 @@ export class XOverviewPage extends MobxLitElement {
   async connectedCallback() {
     super.connectedCallback();
 
-    this.isLoading = true
+    this.isLoading = true;
 
-    // TODO: Remove as the components selector will have been implemented
+    // TODO: Remove as the components autocomplete will be implemented
     await Promise.all([
       componentsStore.fetchComponentStatistics('vaadin-button'),
       componentsStore.fetchComponentStatistics('vaadin-avatar'),
-      store.setSelectedItemIds(['vaadin-button'])
     ]);
 
-    this.isLoading = false
+    this.isLoading = false;
   }
 
   get items() {
@@ -50,7 +44,7 @@ export class XOverviewPage extends MobxLitElement {
 
   get hasItems() {
     if (this.isLoading) {
-      return false
+      return false;
     }
 
     return this.items.length > 0;
@@ -61,11 +55,10 @@ export class XOverviewPage extends MobxLitElement {
       <div class="overview-page">
         ${this.hasItems
           ? html`
-            <x-overview-page-grid></x-overview-page-grid>
-            <!-- <x-overview-page-chart></x-overview-page-chart> -->
-          `
-          : null
-        }
+              <x-overview-page-grid></x-overview-page-grid>
+              <!-- <x-overview-page-chart></x-overview-page-chart> -->
+            `
+          : null}
       </div>
     `;
   }
