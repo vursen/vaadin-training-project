@@ -34,7 +34,7 @@ export class Store {
         const total = downloads.reduce((sum, { total }) => sum + total, 0)
 
         // Aggregates the total of downloads over the last week
-        const totalOverWeek = downloads[0].total
+        const totalOverWeek = downloads[downloads.length - 1].total
 
         // Aggregates the total of downloads over the custom period
         const totalOverCustomPeriod = downloads

@@ -44,7 +44,7 @@ describe('overview page store', () => {
       {
         name: 'vaadin-button',
         total: 218,
-        totalOverWeek: 0,
+        totalOverWeek: 146,
         totalOverCustomPeriod: 218
       }
     ])
