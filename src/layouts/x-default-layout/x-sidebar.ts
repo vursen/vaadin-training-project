@@ -16,7 +16,7 @@ export class XDefaultLayoutSidebar extends MobxLitElement {
       <div class="default-layout-sidebar">
         <ul>
           <li>
-            <a href="${router.urlForName('home')}">
+            <a href="${router.urlForName('overview')}">
               Overview
             </a>
           </li>

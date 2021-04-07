@@ -15,7 +15,12 @@ export interface IComponentStatistics {
 
 export interface IComponentStatisticsDownloads {
   date: string;
+  total: number;
   versions: Record<string, number>;
+}
+
+export interface IContext {
+  api: typeof api
 }
 
 export class ComponentsStore {
@@ -32,7 +37,9 @@ export class ComponentsStore {
   /**
    * Constructor
    */
-  constructor() {
+  constructor(
+    private context: IContext = { api }
+  ) {
     makeAutoObservable(this);
   }
 
@@ -40,6 +47,8 @@ export class ComponentsStore {
    * Fetches components using API and puts the result into the state
    */
   async fetchComponents() {
+    const { api } = this.context
+
     const { core } = await api.fetchComponents();
 
     runInAction(() => {
@@ -58,20 +67,32 @@ export class ComponentsStore {
   }
 
   /**
-   * Fetches the component statistics using API and puts the result into the state
+   * Fetches the component statistics using API,
+   * aggregates the total of downloads by weeks and puts the result into the state
    */
   async fetchComponentStatistics(name: string) {
-    const { downloads } = await api.fetchComponentStatistics(name);
+    const { api } = this.context
+
+    const statistics = await api.fetchComponentStatistics(name);
 
     runInAction(() => {
+      const downloads = statistics.downloads.map(({ date, ...versions }) => {
+        // Aggregates the total of downloads over the week
+        const total = Object.values(versions).reduce(
+          (sum, count) => sum + count,
+          0
+        );
+
+        return {
+          date,
+          total,
+          versions,
+        };
+      });
+
       this.statistics.set(name, {
         name,
-        downloads: downloads.map(({ date, ...versions }) => {
-          return {
-            date,
-            versions,
-          };
-        }),
+        downloads
       });
     });
   }

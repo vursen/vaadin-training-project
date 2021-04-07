@@ -2,7 +2,7 @@ import { Router } from '@vaadin/router';
 
 import './layouts/x-default-layout';
 
-import './pages/x-home-page';
+import './pages/x-overview-page';
 import './pages/x-component-page';
 import './pages/x-not-found-page';
 
@@ -17,8 +17,8 @@ router.setRoutes([
     children: [
       {
         path: '/',
-        name: 'home',
-        component: 'x-home-page',
+        name: 'overview',
+        component: 'x-overview-page',
       },
       {
         path: '/components/:name/',
