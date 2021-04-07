@@ -2,7 +2,6 @@ import { MobxLitElement } from '@adobe/lit-mobx';
 import { css, html, customElement } from 'lit-element';
 
 import '@vaadin/vaadin-grid';
-import '@vaadin/vaadin-grid/vaadin-grid-column';
 import '@vaadin/vaadin-grid/vaadin-grid-column-group';
 import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
