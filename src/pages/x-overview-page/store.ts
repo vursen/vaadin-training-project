@@ -6,11 +6,24 @@ interface IContext {
   componentsStore: typeof componentsStore;
 }
 
+export interface IItem {
+  id: string;
+  name: string;
+  total: number;
+  totalOverWeek: number;
+  totalOverCustomPeriod: number;
+}
+
 export class Store {
   /**
-   * Custom period
+   * Keeps the custom period
    */
   customPeriod = null;
+
+  /**
+   * Keeps the selected items ids as a set
+   */
+  selectedItemIds = new Set<IItem['id']>();
 
   /**
    * Constructor
@@ -20,10 +33,17 @@ export class Store {
   }
 
   /**
+   * Saves the new selected items ids in the state
+   */
+   setSelectedItemIds (selectedItemIds: IItem['id'][]) {
+    this.selectedItemIds = new Set(selectedItemIds)
+  }
+
+  /**
    * Aggregates the totals over the entire period, the last week, the custom period
    * and returns the result as a list that can be later used in `<vaadin-grid />`
    */
-  get items() {
+  get items(): IItem[] {
     const { componentsStore } = this.context;
 
     return [...componentsStore.statistics.values()].map(
@@ -42,6 +62,7 @@ export class Store {
           .reduce((sum, { total }) => sum + total, 0);
 
         return {
+          id: name,
           name,
           total,
           totalOverWeek,
@@ -49,6 +70,13 @@ export class Store {
         };
       }
     );
+  }
+
+  /**
+   * Returns only the selected items
+   */
+  get selectedItems(): IItem[] {
+    return this.items.filter(({ id }) => this.selectedItemIds.has(id));
   }
 }
 

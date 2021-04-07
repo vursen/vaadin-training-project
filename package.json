@@ -50,8 +50,8 @@
   },
   "lint-staged": {
     "*.ts": [
-      "eslint --fix",
-      "prettier --write"
+      "eslint --fix .",
+      "prettier --write ."
     ]
   }
 }
