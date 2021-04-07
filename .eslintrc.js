@@ -10,6 +10,6 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
 
     '@typescript-eslint/no-non-null-assertion': 'off',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off'
   },
 };
