@@ -1,9 +1,9 @@
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { html, customElement } from 'lit-element';
 
-import { router } from '../../router'
+import { router } from '../../router';
 
-import { componentsStore } from '../../stores/components-store'
+import { componentsStore } from '../../stores/components-store';
 
 @customElement('x-default-layout-sidebar')
 export class XDefaultLayoutSidebar extends MobxLitElement {
@@ -12,26 +12,26 @@ export class XDefaultLayoutSidebar extends MobxLitElement {
   }
 
   render() {
+    const components = this.components.map(
+      ({ name }) => html`
+        <li>
+          <a href="${router.urlForName('component', { name })}">${name}</a>
+        </li>
+      `
+    );
+
     return html`
       <div class="default-layout-sidebar">
         <ul>
           <li>
-            <a href="${router.urlForName('overview')}">
-              Overview
-            </a>
+            <a href="${router.urlForName('overview')}"> Overview </a>
           </li>
 
           <vaadin-details>
             <div slot="summary">Components</div>
 
             <ul>
-              ${this.components.map(({ name }) => html`
-                <li>
-                  <a href="${router.urlForName('component', { name })}">
-                    ${name}
-                  </a>
-                </li>
-              `)}
+              ${components}
             </ul>
           </vaadin-details>
         </ul>

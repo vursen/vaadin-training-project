@@ -5,7 +5,7 @@ import '@vaadin/vaadin-details';
 import '@vaadin/vaadin-app-layout';
 import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle';
 
-import './x-sidebar'
+import './x-sidebar';
 
 import { componentsStore } from '../../stores/components-store';
 
@@ -36,15 +36,16 @@ export class XDefaultLayout extends MobxLitElement {
         ${this.isLoading
           ? html`Loading`
           : html`
-            <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
+              <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
 
-            <h1 slot="navbar">Vaadin Stats</h1>
+              <h1 slot="navbar">Vaadin Stats</h1>
 
-            <x-default-layout-sidebar slot="drawer"></x-default-layout-sidebar>
+              <x-default-layout-sidebar
+                slot="drawer"
+              ></x-default-layout-sidebar>
 
-            <slot></slot>
-          `
-        }
+              <slot></slot>
+            `}
       </vaadin-app-layout>
     `;
   }

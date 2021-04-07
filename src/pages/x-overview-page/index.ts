@@ -5,9 +5,9 @@ import '@vaadin/vaadin-grid';
 import '@vaadin/vaadin-grid/vaadin-grid-column-group';
 import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
-import { componentsStore } from '../../stores/components-store'
+import { componentsStore } from '../../stores/components-store';
 
-import { store } from './store'
+import { store } from './store';
 
 @customElement('x-overview-page')
 export class XOverviewPage extends MobxLitElement {
@@ -19,14 +19,14 @@ export class XOverviewPage extends MobxLitElement {
     `;
   }
 
-  async connectedCallback () {
-    super.connectedCallback()
+  async connectedCallback() {
+    super.connectedCallback();
 
     // TODO: Remove as the components selector will have been implemented
     await Promise.all([
       componentsStore.fetchComponentStatistics('vaadin-button'),
-      componentsStore.fetchComponentStatistics('vaadin-avatar')
-    ])
+      componentsStore.fetchComponentStatistics('vaadin-avatar'),
+    ]);
   }
 
   render() {
@@ -35,15 +35,24 @@ export class XOverviewPage extends MobxLitElement {
         <vaadin-grid .items="${store.items}">
           <vaadin-grid-selection-column></vaadin-grid-selection-column>
 
-          <vaadin-grid-column path="name" header="Component"></vaadin-grid-column>
+          <vaadin-grid-column
+            path="name"
+            header="Component"
+          ></vaadin-grid-column>
 
-          <vaadin-grid-column-group
-            header="Downloads"
-            text-align="center"
-          >
-            <vaadin-grid-column path="totalOverCustomPeriod" header="Selected range"></vaadin-grid-column>
-            <vaadin-grid-column path="totalOverWeek" header="Last 7 days"></vaadin-grid-column>
-            <vaadin-grid-column path="total" header="All the time"></vaadin-grid-column>
+          <vaadin-grid-column-group header="Downloads" text-align="center">
+            <vaadin-grid-column
+              path="totalOverCustomPeriod"
+              header="Selected range"
+            ></vaadin-grid-column>
+            <vaadin-grid-column
+              path="totalOverWeek"
+              header="Last 7 days"
+            ></vaadin-grid-column>
+            <vaadin-grid-column
+              path="total"
+              header="All the time"
+            ></vaadin-grid-column>
           </vaadin-grid-column-group>
         </vaadin-grid>
       </div>

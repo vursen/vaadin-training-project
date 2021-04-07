@@ -20,7 +20,7 @@ export interface IComponentStatisticsDownloads {
 }
 
 export interface IContext {
-  api: typeof api
+  api: typeof api;
 }
 
 export class ComponentsStore {
@@ -37,9 +37,7 @@ export class ComponentsStore {
   /**
    * Constructor
    */
-  constructor(
-    private context: IContext = { api }
-  ) {
+  constructor(private context: IContext = { api }) {
     makeAutoObservable(this);
   }
 
@@ -47,7 +45,7 @@ export class ComponentsStore {
    * Fetches components using API and puts the result into the state
    */
   async fetchComponents() {
-    const { api } = this.context
+    const { api } = this.context;
 
     const { core } = await api.fetchComponents();
 
@@ -71,7 +69,7 @@ export class ComponentsStore {
    * aggregates the total of downloads by weeks and puts the result into the state
    */
   async fetchComponentStatistics(name: string) {
-    const { api } = this.context
+    const { api } = this.context;
 
     const statistics = await api.fetchComponentStatistics(name);
 
@@ -92,7 +90,7 @@ export class ComponentsStore {
 
       this.statistics.set(name, {
         name,
-        downloads
+        downloads,
       });
     });
   }

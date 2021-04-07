@@ -14,7 +14,8 @@ describe('components store', () => {
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
     sandbox.stub(api, 'fetchComponents').resolves(fixtures.api.components);
-    sandbox.stub(api, 'fetchComponentStatistics')
+    sandbox
+      .stub(api, 'fetchComponentStatistics')
       .withArgs('vaadin-button')
       .resolves(fixtures.api.componentStatistics);
   });

@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import { when } from 'mobx';
 import { expect } from '@open-wc/testing';
 
 import { api } from '../../../src/api';
@@ -45,9 +44,9 @@ describe('overview page store', () => {
         name: 'vaadin-button',
         total: 218,
         totalOverWeek: 146,
-        totalOverCustomPeriod: 218
-      }
-    ])
+        totalOverCustomPeriod: 218,
+      },
+    ]);
   });
 
   // it('should aggregate the totals of items with the custom period', () => {
