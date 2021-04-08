@@ -10,6 +10,7 @@ import { componentsStore } from '../../stores/components-store';
 import { store } from './store';
 
 import './x-grid';
+import './x-chart';
 
 @customElement('x-overview-page')
 export class XOverviewPage extends MobxLitElement {
@@ -18,8 +19,18 @@ export class XOverviewPage extends MobxLitElement {
 
   static get styles() {
     return css`
-      .overview-page {
+      .wrapper {
         padding: var(--lumo-space-m);
+      }
+
+      .title {
+        margin: 0 0 var(--lumo-space-l);
+        font-size: var(--lumo-font-size-xl);
+      }
+
+      .chart {
+        display: block;
+        margin-bottom: var(--lumo-space-m);
       }
     `;
   }
@@ -52,11 +63,13 @@ export class XOverviewPage extends MobxLitElement {
 
   render() {
     return html`
-      <div class="overview-page">
+      <div class="wrapper">
+        <h1 class="title">Downloads</h1>
+
         ${this.hasItems
           ? html`
-              <x-overview-page-grid></x-overview-page-grid>
-              <!-- <x-overview-page-chart></x-overview-page-chart> -->
+              <x-overview-page-chart class="chart"></x-overview-page-chart>
+              <x-overview-page-grid class="grid"></x-overview-page-grid>
             `
           : null}
       </div>

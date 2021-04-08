@@ -1,6 +1,9 @@
-import { makeAutoObservable } from 'mobx';
+import { action, makeAutoObservable } from 'mobx';
 
-import { componentsStore } from '../../stores/components-store';
+import {
+  componentsStore,
+  IComponentStatisticsDownloads,
+} from '../../stores/components-store';
 
 interface IContext {
   componentsStore: typeof componentsStore;
@@ -9,6 +12,8 @@ interface IContext {
 export interface IItem {
   id: string;
   name: string;
+  npmName: string;
+  downloads: IComponentStatisticsDownloads[];
   total: number;
   totalOverWeek: number;
   totalOverCustomPeriod: number;
@@ -29,7 +34,9 @@ export class Store {
    * Constructor
    */
   constructor(private context: IContext = { componentsStore }) {
-    makeAutoObservable(this);
+    makeAutoObservable(this, {
+      setSelectedItemIds: action,
+    });
   }
 
   /**
@@ -48,6 +55,8 @@ export class Store {
 
     return [...componentsStore.statistics.values()].map(
       ({ name, downloads }) => {
+        const { npmName } = componentsStore.components.get(name)!;
+
         // Aggregates the total of downloads over weeks
         const total = downloads.reduce((sum, { total }) => sum + total, 0);
 
@@ -64,6 +73,8 @@ export class Store {
         return {
           id: name,
           name,
+          npmName,
+          downloads,
           total,
           totalOverWeek,
           totalOverCustomPeriod,
@@ -77,6 +88,30 @@ export class Store {
    */
   get selectedItems(): IItem[] {
     return this.items.filter(({ id }) => this.selectedItemIds.has(id));
+  }
+
+  /**
+   * Returns the series for the downloads chart
+   */
+  get chartSeries() {
+    return this.selectedItems.map(({ name, downloads }) => {
+      return {
+        title: name,
+        values: downloads.map(({ total }) => total),
+      };
+    });
+  }
+
+  /**
+   * Returns the categories for the downloads chart
+   */
+  get chartCategories() {
+    return this.selectedItems[0]?.downloads.map(({ date }) => {
+      const [day, month] = date.split('/');
+
+      // Format date as `dd/mm`
+      return `${day}/${month}`;
+    });
   }
 }
 

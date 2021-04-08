@@ -1,3 +1,4 @@
+import { render } from 'lit-html';
 import { MobxLitElement } from '@adobe/lit-mobx';
 import { html, customElement, query } from 'lit-element';
 
@@ -5,7 +6,13 @@ import '@vaadin/vaadin-grid';
 import '@vaadin/vaadin-grid/vaadin-grid-column-group';
 import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
-import { GridSelectedItemsChanged, GridElement } from '@vaadin/vaadin-grid';
+import {
+  GridElement,
+  GridItemModel,
+  GridSelectedItemsChanged,
+} from '@vaadin/vaadin-grid';
+
+import { GridColumnElement } from '@vaadin/vaadin-grid/vaadin-grid-column';
 
 import { store, Store } from './store';
 
@@ -23,9 +30,26 @@ export class XOverviewPageGrid extends MobxLitElement {
     store.setSelectedItemIds(selectedItemIds);
   }
 
+  renderNameColumn(
+    root: HTMLElement,
+    _column: GridColumnElement,
+    model: GridItemModel
+  ) {
+    const item = model.item as Store['items'][0];
+
+    render(
+      html`
+        <a href="https://www.npmjs.com/package/${item.npmName}" target="_blank">
+          ${item.name}
+        </a>
+      `,
+      root
+    );
+  }
+
   render() {
     return html`
-      <div class="overview-page-grid">
+      <div class="wrapper">
         <vaadin-grid
           id="grid"
           .items="${store.items}"
@@ -38,6 +62,7 @@ export class XOverviewPageGrid extends MobxLitElement {
           <vaadin-grid-column
             path="name"
             header="Component"
+            .renderer="${this.renderNameColumn}"
           ></vaadin-grid-column>
 
           <vaadin-grid-column-group header="Downloads" text-align="center">
