@@ -17,6 +17,7 @@ describe('overview page store', () => {
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
+    sandbox.stub(api, 'fetchComponents').resolves(fixtures.api.components);
     sandbox
       .stub(api, 'fetchComponentStatistics')
       .resolves(fixtures.api.componentStatistics);
@@ -31,6 +32,7 @@ describe('overview page store', () => {
       componentsStore,
     });
 
+    await componentsStore.fetchComponents();
     await componentsStore.fetchComponentStatistics('vaadin-button');
   });
 
@@ -38,16 +40,27 @@ describe('overview page store', () => {
     sandbox.restore();
   });
 
-  it('should aggregate the totals of items', () => {
-    expect(store.items).to.be.deep.equal([
-      {
-        id: 'vaadin-button',
-        name: 'vaadin-button',
-        total: 218,
-        totalOverWeek: 146,
-        totalOverCustomPeriod: 218,
-      },
-    ]);
+  it('should have an items getter', () => {
+    expect(store.items).to.be.an('array').lengthOf(1);
+    expect(store.items[0]).to.include({
+      id: 'vaadin-button',
+      name: 'vaadin-button',
+      npmName: '@vaadin/vaadin-button',
+    });
+  });
+
+  it(`should aggregates the items' totals`, () => {
+    expect(store.items[0]).to.include({
+      total: 218,
+      totalOverWeek: 146,
+      totalOverCustomPeriod: 218,
+    });
+
+    expect(store.items[0].weeks).to.be.an('array').lengthOf(8);
+    expect(store.items[0].weeks[0]).to.include({
+      date: '08/02/2021',
+      total: 0,
+    });
   });
 
   // it('should aggregate the totals of items with the custom period', () => {

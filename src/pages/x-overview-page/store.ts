@@ -1,9 +1,6 @@
 import { action, makeAutoObservable } from 'mobx';
 
-import {
-  componentsStore,
-  IComponentStatisticsDownloads,
-} from '../../stores/components-store';
+import { componentsStore } from '../../stores/components-store';
 
 interface IContext {
   componentsStore: typeof componentsStore;
@@ -13,7 +10,7 @@ export interface IItem {
   id: string;
   name: string;
   npmName: string;
-  downloads: IComponentStatisticsDownloads[];
+  weeks: Array<{ date: string; total: number }>;
   total: number;
   totalOverWeek: number;
   totalOverCustomPeriod: number;
@@ -54,17 +51,17 @@ export class Store {
     const { componentsStore } = this.context;
 
     return [...componentsStore.statistics.values()].map(
-      ({ name, downloads }) => {
+      ({ name, downloads: weeks }) => {
         const { npmName } = componentsStore.components.get(name)!;
 
         // Aggregates the total of downloads over weeks
-        const total = downloads.reduce((sum, { total }) => sum + total, 0);
+        const total = weeks.reduce((sum, { total }) => sum + total, 0);
 
         // Aggregates the total of downloads over the last week
-        const totalOverWeek = downloads[downloads.length - 1].total;
+        const totalOverWeek = weeks[weeks.length - 1].total;
 
         // Aggregates the total of downloads over the custom period
-        const totalOverCustomPeriod = downloads
+        const totalOverCustomPeriod = weeks
           // .filter(({ date }) => {
           //   date
           // })
@@ -74,7 +71,7 @@ export class Store {
           id: name,
           name,
           npmName,
-          downloads,
+          weeks,
           total,
           totalOverWeek,
           totalOverCustomPeriod,
@@ -94,10 +91,10 @@ export class Store {
    * Returns the series for the downloads chart
    */
   get chartSeries() {
-    return this.selectedItems.map(({ name, downloads }) => {
+    return this.selectedItems.map(({ name, weeks }) => {
       return {
         title: name,
-        values: downloads.map(({ total }) => total),
+        values: weeks.map(({ total }) => total),
       };
     });
   }
@@ -106,7 +103,7 @@ export class Store {
    * Returns the categories for the downloads chart
    */
   get chartCategories() {
-    return this.selectedItems[0]?.downloads.map(({ date }) => {
+    return this.selectedItems[0]?.weeks.map(({ date }) => {
       const [day, month] = date.split('/');
 
       // Format date as `dd/mm`
