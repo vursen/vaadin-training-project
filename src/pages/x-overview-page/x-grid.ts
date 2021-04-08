@@ -12,15 +12,15 @@ import { store, Store } from './store';
 @customElement('x-overview-page-grid')
 export class XOverviewPageGrid extends MobxLitElement {
   @query('#grid')
-  grid!: GridElement
+  grid!: GridElement;
 
   onSelectedItemsChanged(_event: GridSelectedItemsChanged) {
     // TODO: Use `event.detail.value` instead of `this.grid.selectedItems`
     // as soon as https://github.com/vaadin/web-components/issues/197 will be resolved
-    const selectedItems = this.grid.selectedItems as Store['selectedItems']
-    const selectedItemIds = selectedItems.map(({ id }) => id)
+    const selectedItems = this.grid.selectedItems as Store['selectedItems'];
+    const selectedItemIds = selectedItems.map(({ id }) => id);
 
-    store.setSelectedItemIds(selectedItemIds)
+    store.setSelectedItemIds(selectedItemIds);
   }
 
   render() {

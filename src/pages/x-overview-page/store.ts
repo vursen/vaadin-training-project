@@ -35,8 +35,8 @@ export class Store {
   /**
    * Replaces the ids of the selected items with the new ones
    */
-   setSelectedItemIds (selectedItemIds: IItem['id'][]) {
-    this.selectedItemIds = new Set(selectedItemIds)
+  setSelectedItemIds(selectedItemIds: IItem['id'][]) {
+    this.selectedItemIds = new Set(selectedItemIds);
   }
 
   /**
