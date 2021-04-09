@@ -1,60 +1,69 @@
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { css, html, customElement } from 'lit-element';
+import { css, html, customElement, internalProperty } from 'lit-element';
 
 import '@vaadin/vaadin-grid';
 import '@vaadin/vaadin-grid/vaadin-grid-column-group';
 import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
-import { componentsStore } from '../../stores/components-store';
-
 import { store } from './store';
+
+import './x-grid';
+import './x-chart';
+import './x-autocomplete';
 
 @customElement('x-overview-page')
 export class XOverviewPage extends MobxLitElement {
+  @internalProperty()
+  isLoading = false;
+
   static get styles() {
     return css`
-      .overview-page {
+      .wrapper {
         padding: var(--lumo-space-m);
+      }
+
+      .autocomplete {
+        display: block;
+        margin: 0 0 var(--lumo-space-l);
+      }
+
+      .title {
+        margin: 0 0 var(--lumo-space-s);
+        font-size: var(--lumo-font-size-xxl);
+      }
+
+      .subtitle {
+        margin: 0 0 var(--lumo-space-m);
+        font-size: var(--lumo-font-size-l);
+      }
+
+      .chart {
+        display: block;
+        margin-bottom: var(--lumo-space-m);
       }
     `;
   }
 
-  async connectedCallback() {
-    super.connectedCallback();
-
-    // TODO: Remove as the components selector will have been implemented
-    await Promise.all([
-      componentsStore.fetchComponentStatistics('vaadin-button'),
-      componentsStore.fetchComponentStatistics('vaadin-avatar'),
-    ]);
+  get isDownloadsVisible() {
+    return store.gridItems.length > 0;
   }
 
   render() {
     return html`
-      <div class="overview-page">
-        <vaadin-grid .items="${store.items}">
-          <vaadin-grid-selection-column></vaadin-grid-selection-column>
+      <div class="wrapper">
+        <h1 class="title">Overview</h1>
 
-          <vaadin-grid-column
-            path="name"
-            header="Component"
-          ></vaadin-grid-column>
+        <x-overview-page-autocomplete
+          class="autocomplete"
+        ></x-overview-page-autocomplete>
 
-          <vaadin-grid-column-group header="Downloads" text-align="center">
-            <vaadin-grid-column
-              path="totalOverCustomPeriod"
-              header="Selected range"
-            ></vaadin-grid-column>
-            <vaadin-grid-column
-              path="totalOverWeek"
-              header="Last 7 days"
-            ></vaadin-grid-column>
-            <vaadin-grid-column
-              path="total"
-              header="All the time"
-            ></vaadin-grid-column>
-          </vaadin-grid-column-group>
-        </vaadin-grid>
+        ${this.isDownloadsVisible
+          ? html`
+              <h2 class="subtitle">Downloads</h2>
+              <x-overview-page-chart class="chart"></x-overview-page-chart>
+              <x-overview-page-grid class="grid"></x-overview-page-grid>
+            `
+          : html``}
       </div>
     `;
   }

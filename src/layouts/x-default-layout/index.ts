@@ -13,7 +13,7 @@ import { componentsStore } from '../../stores/components-store';
 export class XDefaultLayout extends MobxLitElement {
   static get styles() {
     return css`
-      h1 {
+      .title {
         margin: 0 var(--lumo-space-s);
         font-size: var(--lumo-font-size-l);
       }
@@ -27,18 +27,18 @@ export class XDefaultLayout extends MobxLitElement {
   }
 
   get isLoading() {
-    return componentsStore.components.size === 0;
+    return componentsStore.componentsMap.size === 0;
   }
 
   render() {
     return html`
-      <vaadin-app-layout class="default-layout">
+      <vaadin-app-layout class="wrapper">
         ${this.isLoading
           ? html`Loading`
           : html`
               <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
 
-              <h1 slot="navbar">Vaadin Stats</h1>
+              <h1 class="title" slot="navbar">Vaadin Stats</h1>
 
               <x-default-layout-sidebar
                 slot="drawer"

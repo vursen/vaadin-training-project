@@ -7,19 +7,17 @@ import { componentsStore } from '../../stores/components-store';
 
 @customElement('x-default-layout-sidebar')
 export class XDefaultLayoutSidebar extends MobxLitElement {
-  get components() {
-    return [...componentsStore.components.values()];
-  }
-
-  render() {
-    const components = this.components.map(
+  renderComponents() {
+    return componentsStore.components.map(
       ({ name }) => html`
         <li>
           <a href="${router.urlForName('component', { name })}">${name}</a>
         </li>
       `
     );
+  }
 
+  render() {
     return html`
       <div class="default-layout-sidebar">
         <ul>
@@ -31,7 +29,7 @@ export class XDefaultLayoutSidebar extends MobxLitElement {
             <div slot="summary">Components</div>
 
             <ul>
-              ${components}
+              ${this.renderComponents()}
             </ul>
           </vaadin-details>
         </ul>
