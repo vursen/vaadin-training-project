@@ -44,10 +44,6 @@ export class XOverviewPage extends MobxLitElement {
     `;
   }
 
-  async connectedCallback() {
-    super.connectedCallback();
-  }
-
   get isDownloadsVisible() {
     return store.gridItems.length > 0;
   }
