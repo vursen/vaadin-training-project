@@ -6,7 +6,7 @@ interface IContext {
   componentsStore: typeof componentsStore;
 }
 
-export interface IItem {
+export interface IGridItem {
   id: string;
   name: string;
   npmName: string;
@@ -25,29 +25,45 @@ export class Store {
   /**
    * Keeps the ids of the selected items as a set
    */
-  selectedItemIds = new Set<IItem['id']>();
+  selectedGridItemIds = new Set<IGridItem['id']>();
 
   /**
    * Constructor
    */
   constructor(private context: IContext = { componentsStore }) {
     makeAutoObservable(this, {
-      setSelectedItemIds: action,
+      selectGridItem: action,
+      setSelectedGridItems: action,
     });
   }
 
   /**
-   * Replaces the ids of the selected items with the new ones
+   * Replaces selected grid item ids with the new ones
    */
-  setSelectedItemIds(selectedItemIds: IItem['id'][]) {
-    this.selectedItemIds = new Set(selectedItemIds);
+  setSelectedGridItems(ids: Array<IGridItem['id']>) {
+    this.selectedGridItemIds = new Set(ids);
   }
 
   /**
-   * Aggregates the totals over the entire period, the last week, the custom period
-   * and returns the result as a list that can be later used in `<vaadin-grid />`
+   * Selects the grid item
    */
-  get items(): IItem[] {
+  selectGridItem(id: IGridItem['id']) {
+    this.selectedGridItemIds.add(id);
+  }
+
+  /**
+   * Returns true if the grid item is selected and false otherwise
+   */
+  isGridItemSelected(id: IGridItem['id']) {
+    return this.selectedGridItemIds.has(id);
+  }
+
+  /**
+   * Takes the statistics of components, aggregates the totals over the entire period,
+   * the last week, the custom period and returns the result as a list
+   * that can be later used in `<vaadin-grid />`
+   */
+  get gridItems(): IGridItem[] {
     const { componentsStore } = this.context;
 
     return [...componentsStore.statistics.values()].map(
@@ -81,17 +97,17 @@ export class Store {
   }
 
   /**
-   * Returns only the selected items
+   * Returns only the selected grid items
    */
-  get selectedItems(): IItem[] {
-    return this.items.filter(({ id }) => this.selectedItemIds.has(id));
+  get selectedGridItems(): IGridItem[] {
+    return this.gridItems.filter(({ id }) => this.isGridItemSelected(id));
   }
 
   /**
    * Returns the series for the downloads chart
    */
   get chartSeries() {
-    return this.selectedItems.map(({ name, weeks }) => {
+    return this.selectedGridItems.map(({ name, weeks }) => {
       return {
         title: name,
         values: weeks.map(({ total }) => total),
@@ -103,7 +119,7 @@ export class Store {
    * Returns the categories for the downloads chart
    */
   get chartCategories() {
-    return this.selectedItems[0]?.weeks.map(({ date }) => {
+    return this.selectedGridItems[0]?.weeks.map(({ date }) => {
       const [day, month] = date.split('/');
 
       // Format date as `dd/mm`

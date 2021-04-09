@@ -40,24 +40,24 @@ describe('overview page store', () => {
     sandbox.restore();
   });
 
-  it('should have an items getter', () => {
-    expect(store.items).to.have.lengthOf(1);
-    expect(store.items[0]).to.include({
+  it('should have a gridItems getter', () => {
+    expect(store.gridItems).to.have.lengthOf(1);
+    expect(store.gridItems[0]).to.include({
       id: 'vaadin-button',
       name: 'vaadin-button',
       npmName: '@vaadin/vaadin-button',
     });
   });
 
-  it(`should aggregates the items' totals`, () => {
-    expect(store.items[0]).to.include({
+  it('should aggregates the grid item totals', () => {
+    expect(store.gridItems[0]).to.include({
       total: 218,
       totalOverWeek: 146,
       totalOverCustomPeriod: 218,
     });
 
-    expect(store.items[0].weeks).to.have.lengthOf(3);
-    expect(store.items[0].weeks[0]).to.include({
+    expect(store.gridItems[0].weeks).to.have.lengthOf(3);
+    expect(store.gridItems[0].weeks[0]).to.include({
       date: '15/03/2021',
       total: 29,
     });
@@ -67,10 +67,10 @@ describe('overview page store', () => {
   //   // TODO: Implement
   // })
 
-  it('should set the selected item ids', () => {
-    store.setSelectedItemIds(['vaadin-button']);
+  it('should set the selected grid items', () => {
+    store.setSelectedGridItems(['vaadin-button']);
 
-    expect(store.selectedItemIds.size).to.equal(1);
-    expect(store.selectedItemIds.has('vaadin-button')).to.be.true;
+    expect(store.selectedGridItemIds.size).to.equal(1);
+    expect(store.selectedGridItemIds.has('vaadin-button')).to.be.true;
   });
 });

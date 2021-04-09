@@ -24,10 +24,17 @@ export class XOverviewPageGrid extends MobxLitElement {
   onSelectedItemsChanged(_event: GridSelectedItemsChanged) {
     // TODO: Use `event.detail.value` instead of `this.grid.selectedItems`
     // as soon as https://github.com/vaadin/web-components/issues/197 will be resolved
-    const selectedItems = this.grid.selectedItems as Store['selectedItems'];
+    const selectedItems = this.grid.selectedItems as Store['selectedGridItems'];
+
+    // Skip when the event comes with the same selected items so that nothing needs to be updated.
+    // That prevents recurring of Mobx actions' calls
+    if (selectedItems === store.selectedGridItems) {
+      return;
+    }
+
     const selectedItemIds = selectedItems.map(({ id }) => id);
 
-    store.setSelectedItemIds(selectedItemIds);
+    store.setSelectedGridItems(selectedItemIds);
   }
 
   renderNameColumn(
@@ -35,7 +42,7 @@ export class XOverviewPageGrid extends MobxLitElement {
     _column: GridColumnElement,
     model: GridItemModel
   ) {
-    const item = model.item as Store['items'][0];
+    const item = model.item as Store['gridItems'][0];
 
     render(
       html`
@@ -52,7 +59,8 @@ export class XOverviewPageGrid extends MobxLitElement {
       <div class="wrapper">
         <vaadin-grid
           id="grid"
-          .items="${store.items}"
+          .items="${store.gridItems}"
+          .selectedItems="${store.selectedGridItems}"
           @selected-items-changed="${this.onSelectedItemsChanged}"
         >
           <vaadin-grid-selection-column

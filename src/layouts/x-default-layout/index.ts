@@ -13,10 +13,6 @@ import { componentsStore } from '../../stores/components-store';
 export class XDefaultLayout extends MobxLitElement {
   static get styles() {
     return css`
-      .wrapper {
-        --vaadin-app-layout-transition: 0ms;
-      }
-
       .title {
         margin: 0 var(--lumo-space-s);
         font-size: var(--lumo-font-size-l);

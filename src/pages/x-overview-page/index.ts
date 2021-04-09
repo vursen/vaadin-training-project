@@ -5,12 +5,11 @@ import '@vaadin/vaadin-grid';
 import '@vaadin/vaadin-grid/vaadin-grid-column-group';
 import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
-import { componentsStore } from '../../stores/components-store';
-
 import { store } from './store';
 
 import './x-grid';
 import './x-chart';
+import './x-autocomplete';
 
 @customElement('x-overview-page')
 export class XOverviewPage extends MobxLitElement {
@@ -37,41 +36,29 @@ export class XOverviewPage extends MobxLitElement {
 
   async connectedCallback() {
     super.connectedCallback();
-
-    this.isLoading = true;
-
-    // TODO: Remove as the components autocomplete will be implemented
-    await Promise.all([
-      componentsStore.fetchComponentStatistics('vaadin-button'),
-      componentsStore.fetchComponentStatistics('vaadin-avatar'),
-    ]);
-
-    this.isLoading = false;
   }
 
-  get items() {
-    return store.items;
+  get isChartVisible() {
+    return store.chartSeries.length > 0;
   }
 
-  get hasItems() {
-    if (this.isLoading) {
-      return false;
-    }
-
-    return this.items.length > 0;
+  get isGridVisible() {
+    return store.gridItems.length > 0;
   }
 
   render() {
     return html`
       <div class="wrapper">
+        <x-overview-page-autocomplete></x-overview-page-autocomplete>
+
         <h1 class="title">Downloads</h1>
 
-        ${this.hasItems
-          ? html`
-              <x-overview-page-chart class="chart"></x-overview-page-chart>
-              <x-overview-page-grid class="grid"></x-overview-page-grid>
-            `
-          : null}
+        ${this.isChartVisible
+          ? html`<x-overview-page-chart class="chart"></x-overview-page-chart>`
+          : html``}
+        ${this.isGridVisible
+          ? html`<x-overview-page-grid class="grid"></x-overview-page-grid>`
+          : html``}
       </div>
     `;
   }
