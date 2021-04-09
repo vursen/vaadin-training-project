@@ -22,9 +22,19 @@ export class XOverviewPage extends MobxLitElement {
         padding: var(--lumo-space-m);
       }
 
-      .title {
+      .autocomplete {
+        display: block;
         margin: 0 0 var(--lumo-space-l);
-        font-size: var(--lumo-font-size-xl);
+      }
+
+      .title {
+        margin: 0 0 var(--lumo-space-s);
+        font-size: var(--lumo-font-size-xxl);
+      }
+
+      .subtitle {
+        margin: 0 0 var(--lumo-space-m);
+        font-size: var(--lumo-font-size-l);
       }
 
       .chart {
@@ -38,26 +48,25 @@ export class XOverviewPage extends MobxLitElement {
     super.connectedCallback();
   }
 
-  get isChartVisible() {
-    return store.chartSeries.length > 0;
-  }
-
-  get isGridVisible() {
+  get isDownloadsVisible() {
     return store.gridItems.length > 0;
   }
 
   render() {
     return html`
       <div class="wrapper">
-        <x-overview-page-autocomplete></x-overview-page-autocomplete>
+        <h1 class="title">Overview</h1>
 
-        <h1 class="title">Downloads</h1>
+        <x-overview-page-autocomplete
+          class="autocomplete"
+        ></x-overview-page-autocomplete>
 
-        ${this.isChartVisible
-          ? html`<x-overview-page-chart class="chart"></x-overview-page-chart>`
-          : html``}
-        ${this.isGridVisible
-          ? html`<x-overview-page-grid class="grid"></x-overview-page-grid>`
+        ${this.isDownloadsVisible
+          ? html`
+              <h2 class="subtitle">Downloads</h2>
+              <x-overview-page-chart class="chart"></x-overview-page-chart>
+              <x-overview-page-grid class="grid"></x-overview-page-grid>
+            `
           : html``}
       </div>
     `;
