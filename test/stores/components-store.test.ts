@@ -33,11 +33,12 @@ describe('components store', () => {
   it('should fetch components', async () => {
     store.fetchComponents();
 
-    await when(() => store.components.size === 30);
+    await when(() => store.componentsMap.size > 0);
 
     expect(api.fetchComponents).to.have.been.calledOnce;
 
-    expect(store.components.get('vaadin-button')).to.deep.equal({
+    expect(store.componentsMap).to.have.lengthOf(9);
+    expect(store.componentsMap.get('vaadin-button')).to.deep.equal({
       name: 'vaadin-button',
       npmName: '@vaadin/vaadin-button',
       version: '20.0.0-alpha3',
@@ -47,17 +48,45 @@ describe('components store', () => {
   it('should fetch component statistics', async () => {
     store.fetchComponentStatistics('vaadin-button');
 
-    await when(() => store.statistics.size === 1);
+    await when(() => store.statisticsMap.size > 0);
 
     expect(api.fetchComponentStatistics).to.have.been.calledOnce;
 
-    const component = store.statistics.get('vaadin-button')!;
+    expect(store.statisticsMap).to.have.lengthOf(1);
 
-    expect(component.downloads).to.have.lengthOf(8);
-    expect(component.downloads[0].date).to.equal('08/02/2021');
-    expect(component.downloads[0].versions).to.deep.equal({
-      '20.0.0-alpha2': 0,
-      '20.0.0-alpha1': 0,
+    const component = store.statisticsMap.get('vaadin-button')!;
+
+    expect(component.downloads).to.have.lengthOf(3);
+    expect(component.downloads[0]).to.deep.equal({
+      date: '15/03/2021',
+      total: 29,
+      versions: {
+        '20.0.0-alpha2': 0,
+        '20.0.0-alpha1': 29,
+      },
     });
+  });
+
+  it('should have a components getter', async () => {
+    store.fetchComponents();
+
+    await when(() => store.components.length > 0);
+
+    expect(store.components).to.have.lengthOf(9);
+    expect(store.components[0]).to.deep.equal({
+      name: 'vaadin-button',
+      npmName: '@vaadin/vaadin-button',
+      version: '20.0.0-alpha3',
+    });
+  });
+
+  it('should have a statistics getter', async () => {
+    store.fetchComponentStatistics('vaadin-button');
+
+    await when(() => store.statistics.length > 0);
+
+    expect(store.statistics).to.have.lengthOf(1);
+    expect(store.statistics[0].name).to.equal('vaadin-button');
+    expect(store.statistics[0].downloads).to.have.lengthOf(3);
   });
 });

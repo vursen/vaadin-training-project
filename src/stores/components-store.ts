@@ -27,18 +27,32 @@ export class ComponentsStore {
   /**
    * Keeps the components as a map where the key is a component name
    */
-  components = new Map<IComponent['name'], IComponent>();
+  componentsMap = new Map<IComponent['name'], IComponent>();
 
   /**
    * Keeps the statistics of components as a map where the key is a component name
    */
-  statistics = new Map<IComponentStatistics['name'], IComponentStatistics>();
+  statisticsMap = new Map<IComponentStatistics['name'], IComponentStatistics>();
 
   /**
    * Constructor
    */
   constructor(private context: IContext = { api }) {
     makeAutoObservable(this);
+  }
+
+  /**
+   * Returns the components as an array
+   */
+  get components() {
+    return [...this.componentsMap.values()];
+  }
+
+  /**
+   * Returns the statistics of components as an array
+   */
+  get statistics() {
+    return [...this.statisticsMap.values()];
   }
 
   /**
@@ -50,12 +64,12 @@ export class ComponentsStore {
     const { core } = await api.fetchComponents();
 
     runInAction(() => {
-      this.components.clear();
+      this.componentsMap.clear();
 
       Object.entries(core)
         .filter(([_name, { component }]) => component)
         .forEach(([name, component]) => {
-          this.components.set(name, {
+          this.componentsMap.set(name, {
             name,
             npmName: component.npmName!,
             version: component.jsVersion!,
@@ -88,7 +102,7 @@ export class ComponentsStore {
         };
       });
 
-      this.statistics.set(name, {
+      this.statisticsMap.set(name, {
         name,
         downloads,
       });

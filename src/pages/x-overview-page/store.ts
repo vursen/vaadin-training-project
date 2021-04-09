@@ -52,7 +52,7 @@ export class Store {
 
     return [...componentsStore.statistics.values()].map(
       ({ name, downloads: weeks }) => {
-        const { npmName } = componentsStore.components.get(name)!;
+        const { npmName } = componentsStore.componentsMap.get(name)!;
 
         // Aggregates the total of downloads over weeks
         const total = weeks.reduce((sum, { total }) => sum + total, 0);

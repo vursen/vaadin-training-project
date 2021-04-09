@@ -41,7 +41,7 @@ describe('overview page store', () => {
   });
 
   it('should have an items getter', () => {
-    expect(store.items).to.be.an('array').lengthOf(1);
+    expect(store.items).to.have.lengthOf(1);
     expect(store.items[0]).to.include({
       id: 'vaadin-button',
       name: 'vaadin-button',
@@ -56,10 +56,10 @@ describe('overview page store', () => {
       totalOverCustomPeriod: 218,
     });
 
-    expect(store.items[0].weeks).to.be.an('array').lengthOf(8);
+    expect(store.items[0].weeks).to.have.lengthOf(3);
     expect(store.items[0].weeks[0]).to.include({
-      date: '08/02/2021',
-      total: 0,
+      date: '15/03/2021',
+      total: 29,
     });
   });
 
@@ -70,7 +70,7 @@ describe('overview page store', () => {
   it('should set the selected item ids', () => {
     store.setSelectedItemIds(['vaadin-button']);
 
-    expect(store.selectedItemIds.size).to.be.equal(1);
+    expect(store.selectedItemIds.size).to.equal(1);
     expect(store.selectedItemIds.has('vaadin-button')).to.be.true;
   });
 });

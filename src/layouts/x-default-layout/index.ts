@@ -31,7 +31,7 @@ export class XDefaultLayout extends MobxLitElement {
   }
 
   get isLoading() {
-    return componentsStore.components.size === 0;
+    return componentsStore.componentsMap.size === 0;
   }
 
   render() {
