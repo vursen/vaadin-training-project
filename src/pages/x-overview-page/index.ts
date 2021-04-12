@@ -7,7 +7,7 @@ import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
 import { store } from './store';
 
-import '../../components/x-date-range';
+import '../../components/x-date-range-picker';
 
 import './x-grid';
 import './x-chart';
@@ -29,7 +29,7 @@ export class XOverviewPage extends MobxLitElement {
         font-size: var(--lumo-font-size-xxl);
       }
 
-      .date-range {
+      .date-range-picker {
         display: block;
         margin: 0 0 var(--lumo-space-m);
       }
@@ -60,7 +60,7 @@ export class XOverviewPage extends MobxLitElement {
       <div class="wrapper">
         <h1 class="title">Overview</h1>
 
-        <x-date-range class="date-range"></x-date-range>
+        <x-date-range-picker class="date-range-picker"></x-date-range-picker>
 
         <x-overview-page-autocomplete
           class="autocomplete"
