@@ -48,16 +48,8 @@ export class XDateRangePicker extends MobxLitElement {
    */
   @property({ type: Array })
   ranges = [
-    {
-      title: 'Last 2 weeks',
-      from: weeksAgo(new Date(), 2),
-      to: today(),
-    },
-    {
-      title: 'Last 4 weeks',
-      from: weeksAgo(new Date(), 4),
-      to: today(),
-    },
+    { title: 'Last 2 weeks', from: weeksAgo(new Date(), 2), to: today() },
+    { title: 'Last 4 weeks', from: weeksAgo(new Date(), 4), to: today() },
   ];
 
   get value() {
