@@ -10,7 +10,7 @@ import '@vaadin/vaadin-date-picker';
 import { SelectValueChanged } from '@vaadin/vaadin-select';
 import { DatePickerValueChanged } from '@vaadin/vaadin-date-picker';
 
-import { createToChangedEvent, createFromChangedEvent } from './events';
+import { createFromChangedEvent, createToChangedEvent } from './events';
 
 import {
   today,
@@ -19,20 +19,15 @@ import {
   deserializeDateRange,
 } from './helpers';
 
-export {
-  ToChanged as XDateRangePickerToChanged,
-  FromChanged as XDateRangePickerFromChanged,
-} from './events';
-
 @customElement('x-date-range-picker')
-export class XDateRangePicker extends MobxLitElement {
+export class XDateRangePickerElement extends MobxLitElement {
   /**
    * The start date of the range.
    *
    * Supported date format: ISO 8601 `"YYYY-MM-DD"`
    */
   @property({ type: String })
-  from?: string;
+  from = '';
 
   /**
    * The end date of the range.
@@ -40,7 +35,7 @@ export class XDateRangePicker extends MobxLitElement {
    * Supported date format: ISO 8601 `"YYYY-MM-DD"`
    */
   @property({ type: String })
-  to?: string;
+  to = '';
 
   /**
    * An array that contains pre-defined date ranges.
@@ -61,13 +56,12 @@ export class XDateRangePicker extends MobxLitElement {
     { title: 'Last 4 weeks', from: weeksAgo(4), to: today() },
   ];
 
-  get value() {
-    return [this.from, this.to];
-  }
-
-  private get selectValue() {
+  get selectValue() {
     const range = this.ranges.find(({ from, to }) => {
-      return serializeDateRange([from, to]) === serializeDateRange(this.value);
+      return (
+        serializeDateRange([from, to]) ===
+        serializeDateRange([this.from, this.to])
+      );
     });
 
     // Check if a pre-defined range is selected
@@ -80,28 +74,31 @@ export class XDateRangePicker extends MobxLitElement {
     return '';
   }
 
-  private get isCustomDateDisabled() {
+  get isCustomDateDisabled() {
     return this.selectValue !== '';
   }
 
-  private onSelectValueChanged(event: SelectValueChanged) {
-    const { value } = event.detail;
-
-    if (value === '') {
-      // TODO: Fire events instead
-      this.to = undefined;
-      this.from = undefined;
-      return;
-    }
-
-    const [from, to] = deserializeDateRange(value);
-
-    // TODO: Fire events instead
-    this.from = from;
-    this.to = to;
+  onFromValueChanged({ detail }: DatePickerValueChanged) {
+    this.dispatchEvent(createFromChangedEvent({ value: detail.value }));
   }
 
-  private renderSelect = (root: HTMLElement) => {
+  onToValueChanged({ detail }: DatePickerValueChanged) {
+    this.dispatchEvent(createToChangedEvent({ value: detail.value }));
+  }
+
+  onSelectValueChanged({ detail }: SelectValueChanged) {
+    let from = '';
+    let to = '';
+
+    if (detail.value) {
+      [from, to] = deserializeDateRange(detail.value);
+    }
+
+    this.dispatchEvent(createFromChangedEvent({ value: from }));
+    this.dispatchEvent(createToChangedEvent({ value: to }));
+  }
+
+  renderSelect = (root: HTMLElement) => {
     const ranges = this.ranges.map(({ from, to, title }) => {
       const value = serializeDateRange([from, to]);
 
@@ -119,18 +116,6 @@ export class XDateRangePicker extends MobxLitElement {
     );
   };
 
-  private onFromValueChanged({ detail }: DatePickerValueChanged) {
-    const event = createFromChangedEvent({ value: detail.value || undefined });
-
-    this.dispatchEvent(event);
-  }
-
-  private onToValueChanged({ detail }: DatePickerValueChanged) {
-    const event = createToChangedEvent({ value: detail.value || undefined });
-
-    this.dispatchEvent(event);
-  }
-
   render() {
     return html`
       <div class="wrapper">
@@ -146,7 +131,7 @@ export class XDateRangePicker extends MobxLitElement {
           .max="${this.to}"
           .disabled="${this.isCustomDateDisabled}"
           clear-button-visible
-          .value="${this.from || ''}"
+          .value="${this.from}"
           @value-changed="${this.onFromValueChanged}"
         ></vaadin-date-picker>
 
@@ -155,10 +140,15 @@ export class XDateRangePicker extends MobxLitElement {
           .min="${this.from}"
           .disabled="${this.isCustomDateDisabled}"
           clear-button-visible
-          .value="${this.to || ''}"
+          .value="${this.to}"
           @value-changed="${this.onToValueChanged}"
         ></vaadin-date-picker>
       </div>
     `;
   }
 }
+
+export {
+  FromChanged as XDateRangePickerFromChanged,
+  ToChanged as XDateRangePickerToChanged,
+} from './events';

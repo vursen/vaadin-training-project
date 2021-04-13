@@ -3,7 +3,7 @@ type CustomEventDetail<T> = T extends CustomEvent<infer P> ? P : T;
 /**
  * Fired when the `to` property changes
  */
-export class ToChanged extends CustomEvent<{ value?: string }> {}
+export class ToChanged extends CustomEvent<{ value: string }> {}
 
 /**
  * Creates a `to-changed` event
@@ -15,7 +15,7 @@ export function createToChangedEvent(detail: CustomEventDetail<ToChanged>) {
 /**
  * Fired when the `from` property changes
  */
-export class FromChanged extends CustomEvent<{ value?: string }> {}
+export class FromChanged extends CustomEvent<{ value: string }> {}
 
 /**
  * Creates a `from-changed` event
