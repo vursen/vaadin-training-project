@@ -22,9 +22,9 @@ export function deserializeDateRange(range: string) {
 /**
  * Substracts a number of weeks from the date, returns the result date in ISO format
  */
-export function weeksAgo(date: Date, weeks: number) {
+export function weeksAgo(weeks: number) {
   return format(
-    new Date(date.getTime() - 1000 * 60 * 60 * 24 * 7 /* days */ * weeks)
+    new Date(Date.now() - 1000 * 60 * 60 * 24 * 7 /* days */ * weeks)
   );
 }
 
