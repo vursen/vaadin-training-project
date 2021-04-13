@@ -33,8 +33,8 @@ export class XDateRangePickerElement extends MobxLitElement {
   value = '';
 
   /**
-   * The delimiter that is used for splitting
-   * date range into `start` / `end`
+   * The delimiter that is used to split date range into
+   * `start` date and `end` date.
    */
   @property({ type: String })
   delimiter = '|';
@@ -65,11 +65,11 @@ export class XDateRangePickerElement extends MobxLitElement {
     },
   ];
 
-  get startDate() {
+  get startValue() {
     return deserializeDateRange(this.value)[0];
   }
 
-  get endDate() {
+  get endValue() {
     return deserializeDateRange(this.value)[1];
   }
 
@@ -90,22 +90,22 @@ export class XDateRangePickerElement extends MobxLitElement {
     return this.selectValue !== '';
   }
 
-  onStartDateValueChanged(event: DatePickerValueChanged) {
+  onStartValueChanged(event: DatePickerValueChanged) {
     const { value } = event.detail;
 
-    this.value = serializeDateRange([value, this.endDate]);
+    this.value = serializeDateRange([value, this.endValue]);
 
-    if (this.startDate && this.endDate) {
+    if (this.startValue && this.endValue) {
       this.dispatchEvent(new ValueChangedEvent({ value }));
     }
   }
 
-  onEndDateValueChanged(event: DatePickerValueChanged) {
+  onEndValueChanged(event: DatePickerValueChanged) {
     const { value } = event.detail;
 
-    this.value = serializeDateRange([this.startDate, value]);
+    this.value = serializeDateRange([this.startValue, value]);
 
-    if (this.startDate && this.endDate) {
+    if (this.startValue && this.endValue) {
       this.dispatchEvent(new ValueChangedEvent({ value }));
     }
   }
@@ -115,7 +115,7 @@ export class XDateRangePickerElement extends MobxLitElement {
 
     this.value = value || '';
 
-    if (this.startDate && this.endDate) {
+    if (this.startValue && this.endValue) {
       this.dispatchEvent(new ValueChangedEvent({ value }));
     }
   }
@@ -150,21 +150,21 @@ export class XDateRangePickerElement extends MobxLitElement {
         <vaadin-date-picker
           id="start-date-picker"
           label="From"
-          .max="${this.endDate}"
+          .max="${this.endValue}"
           .disabled="${this.isCustomDateDisabled}"
           clear-button-visible
-          .value="${this.startDate}"
-          @value-changed="${this.onStartDateValueChanged}"
+          .value="${this.startValue}"
+          @value-changed="${this.onStartValueChanged}"
         ></vaadin-date-picker>
 
         <vaadin-date-picker
           id="end-date-picker"
           label="To"
-          .min="${this.startDate}"
+          .min="${this.startValue}"
           .disabled="${this.isCustomDateDisabled}"
           clear-button-visible
-          .value="${this.endDate}"
-          @value-changed="${this.onEndDateValueChanged}"
+          .value="${this.endValue}"
+          @value-changed="${this.onEndValueChanged}"
         ></vaadin-date-picker>
       </div>
     `;
