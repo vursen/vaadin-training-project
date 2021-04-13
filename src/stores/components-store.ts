@@ -56,7 +56,7 @@ export class ComponentsStore {
   }
 
   /**
-   * Fetches components using API and puts the result into the state
+   * Fetches components using API and puts into the state
    */
   async fetchComponents() {
     const { api } = this.context;

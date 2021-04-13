@@ -20,7 +20,8 @@ export function deserializeDateRange(range: string) {
 }
 
 /**
- * Substracts a number of weeks from the date, returns the result date in ISO format
+ * Substracts a number of weeks from the today's date,
+ * returns the resulting date in ISO format
  */
 export function weeksAgo(weeks: number) {
   return format(

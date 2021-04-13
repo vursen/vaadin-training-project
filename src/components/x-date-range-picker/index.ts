@@ -10,40 +10,49 @@ import '@vaadin/vaadin-date-picker';
 import { SelectValueChanged } from '@vaadin/vaadin-select';
 import { DatePickerValueChanged } from '@vaadin/vaadin-date-picker';
 
+import { createToChangedEvent, createFromChangedEvent } from './events';
+
 import {
-  deserializeDateRange,
-  serializeDateRange,
   today,
   weeksAgo,
+  serializeDateRange,
+  deserializeDateRange,
 } from './helpers';
+
+export {
+  ToChanged as XDateRangePickerToChanged,
+  FromChanged as XDateRangePickerFromChanged,
+} from './events';
 
 @customElement('x-date-range-picker')
 export class XDateRangePicker extends MobxLitElement {
   /**
-   * The property keeps the start date of the range.
+   * The start date of the range.
    *
-   * Supports only the ISO 8601 date format `"YYYY-MM-DD"`
+   * Supported date format: ISO 8601 `"YYYY-MM-DD"`
    */
   @property({ type: String })
   from?: string;
 
   /**
-   * The property keeps the end date of the range.
+   * The end date of the range.
    *
-   * Supports only the ISO 8601 date format `"YYYY-MM-DD"`
+   * Supported date format: ISO 8601 `"YYYY-MM-DD"`
    */
   @property({ type: String })
   to?: string;
 
   /**
-   * The property is used to set up pre-defined date ranges.
+   * An array that contains pre-defined date ranges.
    *
-   * Supports only the ISO 8601 date format `"YYYY-MM-DD"` for the properties `from`, `to`.
+   * Supported date format: ISO 8601 `"YYYY-MM-DD"`
    *
-   * Example:
-   *
+   * Should match the following structure:
    * ```
-   * [{ title: 'Last week', from: '01-07-2021', to: '07-07-2021' }]
+   * [
+   *  { title: 'Last week', from: '07-07-2021', to: '14-07-2021' },
+   *  { title: 'Last 2 weeks', from: '01-07-2021', to: '14-07-2021' },
+   * ]
    * ```
    */
   @property({ type: Array })
@@ -61,7 +70,7 @@ export class XDateRangePicker extends MobxLitElement {
       return serializeDateRange([from, to]) === serializeDateRange(this.value);
     });
 
-    // If a pre-defined range is selected
+    // Check if a pre-defined range is selected
     if (range) {
       const { from, to } = range;
 
@@ -110,14 +119,16 @@ export class XDateRangePicker extends MobxLitElement {
     );
   };
 
-  private onFromValueChanged(event: DatePickerValueChanged) {
-    // TODO: Fire events instead
-    this.from = event.detail.value || undefined;
+  private onFromValueChanged({ detail }: DatePickerValueChanged) {
+    const event = createFromChangedEvent({ value: detail.value || undefined });
+
+    this.dispatchEvent(event);
   }
 
-  private onToValueChanged(event: DatePickerValueChanged) {
-    // TODO: Fire events instead
-    this.to = event.detail.value || undefined;
+  private onToValueChanged({ detail }: DatePickerValueChanged) {
+    const event = createToChangedEvent({ value: detail.value || undefined });
+
+    this.dispatchEvent(event);
   }
 
   render() {
