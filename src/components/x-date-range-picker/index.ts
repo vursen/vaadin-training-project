@@ -10,7 +10,7 @@ import '@vaadin/vaadin-date-picker';
 import { SelectValueChanged } from '@vaadin/vaadin-select';
 import { DatePickerValueChanged } from '@vaadin/vaadin-date-picker';
 
-import { createFromChangedEvent, createToChangedEvent } from './events';
+import { ValueChangedEvent } from './events';
 
 import {
   today,
@@ -22,53 +22,65 @@ import {
 @customElement('x-date-range-picker')
 export class XDateRangePickerElement extends MobxLitElement {
   /**
-   * The start date of the range.
+   * The value for this element.
    *
-   * Supported date format: ISO 8601 `"YYYY-MM-DD"`
+   * `"YYYY-MM-DD|YYYY-MM-DD"`
+   *
+   * Supports only the ISO 8601 date format and should use the delimiter
+   * defined in the `delimiter` property (default: `|`).
    */
   @property({ type: String })
-  from = '';
+  value = '';
 
   /**
-   * The end date of the range.
-   *
-   * Supported date format: ISO 8601 `"YYYY-MM-DD"`
+   * The delimiter that is used for splitting
+   * date range into `start` / `end`
    */
   @property({ type: String })
-  to = '';
+  delimiter = '|';
 
   /**
    * An array that contains pre-defined date ranges.
    *
-   * Supported date format: ISO 8601 `"YYYY-MM-DD"`
-   *
    * Should match the following structure:
    * ```
    * [
-   *  { title: 'Last week', from: '07-07-2021', to: '14-07-2021' },
-   *  { title: 'Last 2 weeks', from: '01-07-2021', to: '14-07-2021' },
+   *  { title: 'Last 2 weeks', value: '14-07-2021|28-07-2021' },
+   *  { title: 'Last 4 weeks', value: '01-07-2021|28-07-2021' },
    * ]
    * ```
+   *
+   * The `value` property supports only the ISO 8601 date format and should use the delimiter
+   * defined in the `delimiter` property (default: `|`).
    */
   @property({ type: Array })
   ranges = [
-    { title: 'Last 2 weeks', from: weeksAgo(2), to: today() },
-    { title: 'Last 4 weeks', from: weeksAgo(4), to: today() },
+    {
+      title: 'Last 2 weeks',
+      value: serializeDateRange([weeksAgo(2), today()]),
+    },
+    {
+      title: 'Last 4 weeks',
+      value: serializeDateRange([weeksAgo(4), today()]),
+    },
   ];
 
+  get startDate() {
+    return deserializeDateRange(this.value)[0];
+  }
+
+  get endDate() {
+    return deserializeDateRange(this.value)[1];
+  }
+
   get selectValue() {
-    const range = this.ranges.find(({ from, to }) => {
-      return (
-        serializeDateRange([from, to]) ===
-        serializeDateRange([this.from, this.to])
-      );
+    const range = this.ranges.find(({ value }) => {
+      return this.value === value;
     });
 
     // Check if a pre-defined range is selected
     if (range) {
-      const { from, to } = range;
-
-      return serializeDateRange([from, to]);
+      return range.value;
     }
 
     return '';
@@ -78,30 +90,38 @@ export class XDateRangePickerElement extends MobxLitElement {
     return this.selectValue !== '';
   }
 
-  onFromValueChanged({ detail }: DatePickerValueChanged) {
-    this.dispatchEvent(createFromChangedEvent({ value: detail.value }));
-  }
+  onStartDateValueChanged(event: DatePickerValueChanged) {
+    const { value } = event.detail;
 
-  onToValueChanged({ detail }: DatePickerValueChanged) {
-    this.dispatchEvent(createToChangedEvent({ value: detail.value }));
-  }
+    this.value = serializeDateRange([value, this.endDate]);
 
-  onSelectValueChanged({ detail }: SelectValueChanged) {
-    let from = '';
-    let to = '';
-
-    if (detail.value) {
-      [from, to] = deserializeDateRange(detail.value);
+    if (this.startDate && this.endDate) {
+      this.dispatchEvent(new ValueChangedEvent({ value }));
     }
+  }
 
-    this.dispatchEvent(createFromChangedEvent({ value: from }));
-    this.dispatchEvent(createToChangedEvent({ value: to }));
+  onEndDateValueChanged(event: DatePickerValueChanged) {
+    const { value } = event.detail;
+
+    this.value = serializeDateRange([this.startDate, value]);
+
+    if (this.startDate && this.endDate) {
+      this.dispatchEvent(new ValueChangedEvent({ value }));
+    }
+  }
+
+  onSelectValueChanged(event: SelectValueChanged) {
+    const { value } = event.detail;
+
+    this.value = value || '';
+
+    if (this.startDate && this.endDate) {
+      this.dispatchEvent(new ValueChangedEvent({ value }));
+    }
   }
 
   renderSelect = (root: HTMLElement) => {
-    const ranges = this.ranges.map(({ from, to, title }) => {
-      const value = serializeDateRange([from, to]);
-
+    const ranges = this.ranges.map(({ value, title }) => {
       return html`<vaadin-item value="${value}">${title}</vaadin-item>`;
     });
 
@@ -120,6 +140,7 @@ export class XDateRangePickerElement extends MobxLitElement {
     return html`
       <div class="wrapper">
         <vaadin-select
+          id="range-select"
           label="Select range"
           .value="${this.selectValue}"
           @value-changed="${this.onSelectValueChanged}"
@@ -127,28 +148,27 @@ export class XDateRangePickerElement extends MobxLitElement {
         ></vaadin-select>
 
         <vaadin-date-picker
+          id="start-date-picker"
           label="From"
-          .max="${this.to}"
+          .max="${this.endDate}"
           .disabled="${this.isCustomDateDisabled}"
           clear-button-visible
-          .value="${this.from}"
-          @value-changed="${this.onFromValueChanged}"
+          .value="${this.startDate}"
+          @value-changed="${this.onStartDateValueChanged}"
         ></vaadin-date-picker>
 
         <vaadin-date-picker
+          id="end-date-picker"
           label="To"
-          .min="${this.from}"
+          .min="${this.startDate}"
           .disabled="${this.isCustomDateDisabled}"
           clear-button-visible
-          .value="${this.to}"
-          @value-changed="${this.onToValueChanged}"
+          .value="${this.endDate}"
+          @value-changed="${this.onEndDateValueChanged}"
         ></vaadin-date-picker>
       </div>
     `;
   }
 }
 
-export {
-  FromChanged as XDateRangePickerFromChanged,
-  ToChanged as XDateRangePickerToChanged,
-} from './events';
+export { ValueChangedEvent as XDateRangePickerValueChangedEvent } from './events';

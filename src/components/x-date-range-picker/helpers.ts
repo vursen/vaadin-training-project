@@ -9,14 +9,16 @@ export function format(date: Date) {
  * Serializes the date range into a string
  */
 export function serializeDateRange(range: Array<string | undefined>) {
-  return range.join('|');
+  return range.filter(Boolean).join('|');
 }
 
 /**
  * Deserializes the date range from a string
  */
 export function deserializeDateRange(range: string) {
-  return range.split('|');
+  const [from = '', to = ''] = range.split('|');
+
+  return [from, to];
 }
 
 /**
