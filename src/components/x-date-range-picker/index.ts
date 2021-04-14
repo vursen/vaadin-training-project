@@ -1,6 +1,6 @@
 import { render } from 'lit-html';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { html, customElement, property } from 'lit-element';
+import { html, customElement, property, PropertyValues } from 'lit-element';
 
 import '@vaadin/vaadin-item';
 import '@vaadin/vaadin-select';
@@ -65,6 +65,18 @@ export class XDateRangePickerElement extends MobxLitElement {
     },
   ];
 
+  updated(changedProperties: PropertyValues) {
+    if (changedProperties.has('value')) {
+      this.onValuePropertyUpdated();
+    }
+  }
+
+  onValuePropertyUpdated() {
+    if (Boolean(this.startValue) === Boolean(this.endValue)) {
+      this.dispatchEvent(new ValueChangedEvent({ value: this.value }));
+    }
+  }
+
   get startValue() {
     return deserializeDateRange(this.value, this.delimiter)[0];
   }
@@ -94,30 +106,18 @@ export class XDateRangePickerElement extends MobxLitElement {
     const { value } = event.detail;
 
     this.value = serializeDateRange([value, this.endValue], this.delimiter);
-
-    if (this.startValue && this.endValue) {
-      this.dispatchEvent(new ValueChangedEvent({ value }));
-    }
   }
 
   onEndValueChanged(event: DatePickerValueChanged) {
     const { value } = event.detail;
 
     this.value = serializeDateRange([this.startValue, value], this.delimiter);
-
-    if (this.startValue && this.endValue) {
-      this.dispatchEvent(new ValueChangedEvent({ value }));
-    }
   }
 
   onSelectValueChanged(event: SelectValueChanged) {
     const { value } = event.detail;
 
     this.value = value || '';
-
-    if (this.startValue && this.endValue) {
-      this.dispatchEvent(new ValueChangedEvent({ value }));
-    }
   }
 
   renderSelect = (root: HTMLElement) => {
