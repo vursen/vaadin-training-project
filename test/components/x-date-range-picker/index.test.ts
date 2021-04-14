@@ -9,43 +9,45 @@ import { XDateRangePickerElement } from '../../../src/components/x-date-range-pi
 
 describe('x-date-range-picker', () => {
   let element: XDateRangePickerElement;
-  let endDateElement: DatePickerElement;
-  let startDateElement: DatePickerElement;
-  let rangeSelectElement: SelectElement;
+
+  function rangeSelectElement(): SelectElement | null {
+    return element.shadowRoot!.querySelector('#range-select');
+  }
+
+  function startDateElement(): DatePickerElement {
+    return element.shadowRoot!.querySelector('#start-date-picker')!;
+  }
+
+  function endDateElement(): DatePickerElement {
+    return element.shadowRoot!.querySelector('#end-date-picker')!;
+  }
 
   beforeEach(async () => {
     element = await fixture(html`<x-date-range-picker></x-date-range-picker>`);
-
-    rangeSelectElement = element.shadowRoot!.querySelector('#range-select')!;
-    startDateElement = element.shadowRoot!.querySelector('#start-date-picker')!;
-    endDateElement = element.shadowRoot!.querySelector('#end-date-picker')!;
   });
 
-  it(`should have selected the custom range option by default`, () => {
-    expect(rangeSelectElement.value).to.equal('');
-    expect(startDateElement.value).to.equal('');
-    expect(endDateElement.value).to.equal('');
-  });
-
+  /**
+   * Delimiter
+   */
   describe('delimiter', () => {
-    it('should use the defined delimiter to deserialize the value', async () => {
+    it('should use the `delimiter` property to deserialize the value', async () => {
       element.delimiter = '!';
       element.value = '2021-01-01!2021-01-07';
 
       await element.updateComplete;
 
-      expect(startDateElement.value).to.equal('2021-01-01');
-      expect(endDateElement.value).to.equal('2021-01-07');
+      expect(startDateElement().value).to.equal('2021-01-01');
+      expect(endDateElement().value).to.equal('2021-01-07');
     });
 
-    it('should use the defined delimiter to serialize the value', async () => {
+    it('should use the `delimiter` property to serialize the value', async () => {
       const spy = sinon.spy();
-
       element.addEventListener('value-changed', spy);
+
       element.delimiter = '!';
 
-      startDateElement.value = '2021-01-01';
-      endDateElement.value = '2021-01-07';
+      startDateElement().value = '2021-01-01';
+      endDateElement().value = '2021-01-07';
 
       await element.updateComplete;
 
@@ -58,14 +60,85 @@ describe('x-date-range-picker', () => {
     });
   });
 
+  /**
+   * Range select
+   */
+  describe('range select', () => {
+    beforeEach(async () => {
+      element.ranges = [
+        {
+          title: 'Last 2 weeks',
+          value: '2021-01-01|2021-01-14',
+        },
+      ];
+
+      await element.updateComplete;
+    });
+
+    it(`should not have selected any pre-defined range by default`, () => {
+      expect(rangeSelectElement()!.value).to.equal('');
+      expect(startDateElement().value).to.equal('');
+      expect(endDateElement().value).to.equal('');
+    });
+
+    // it('should render the list of pre-defined ranges', () => {
+    //   expect(rangeSelectElement);
+    // });
+
+    it(`should fire the 'value-changed' event when selecting a pre-defined range`, async () => {
+      const spy = sinon.spy();
+      element.addEventListener('value-changed', spy);
+
+      rangeSelectElement()!.value = '2021-01-01|2021-01-14';
+
+      await element.updateComplete;
+
+      expect(spy).to.be.calledOnce;
+      expect(spy).to.be.calledWithMatch({
+        detail: {
+          value: '2021-01-01|2021-01-14',
+        },
+      });
+    });
+
+    it(`should update the date pickers when selecting a pre-defined range`, async () => {
+      rangeSelectElement()!.value = '2021-01-01|2021-01-14';
+
+      await element.updateComplete;
+
+      expect(startDateElement().value).to.equal('2021-01-01');
+      expect(endDateElement().value).to.equal('2021-01-14');
+    });
+
+    it('should disable the date pickers when selecting a pre-defined range', async () => {
+      rangeSelectElement()!.value = '2021-01-01|2021-01-14';
+
+      await element.updateComplete;
+
+      expect(startDateElement().disabled).to.be.true;
+      expect(endDateElement().disabled).to.be.true;
+    });
+
+    it(`should hide the range select if there are no pre-defined ranges`, async () => {
+      element.ranges = [];
+
+      await element.updateComplete;
+
+      expect(rangeSelectElement()).to.be.null;
+    });
+  });
+
+  /**
+   * Date limits
+   */
   describe('date limits', () => {
     it('should set the min date limit when changing the value', async () => {
       element.value = '2021-01-01|';
 
       await element.updateComplete;
 
-      expect(startDateElement.max).to.equal('');
-      expect(endDateElement.min).to.equal('2021-01-01');
+      expect(startDateElement().max).to.equal('');
+      expect(endDateElement().min).to.equal('2021-01-01');
     });
 
     it('should set the max date limit when changing the value', async () => {
@@ -73,8 +146,8 @@ describe('x-date-range-picker', () => {
 
       await element.updateComplete;
 
-      expect(startDateElement.max).to.equal('2021-01-01');
-      expect(endDateElement.min).to.equal('');
+      expect(startDateElement().max).to.equal('2021-01-01');
+      expect(endDateElement().min).to.equal('');
     });
 
     it('should set the min and max date limits when changing the value', async () => {
@@ -82,8 +155,8 @@ describe('x-date-range-picker', () => {
 
       await element.updateComplete;
 
-      expect(startDateElement.max).to.equal('2021-01-07');
-      expect(endDateElement.min).to.equal('2021-01-01');
+      expect(startDateElement().max).to.equal('2021-01-07');
+      expect(endDateElement().min).to.equal('2021-01-01');
     });
   });
 });

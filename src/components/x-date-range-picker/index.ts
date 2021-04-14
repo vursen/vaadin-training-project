@@ -1,6 +1,6 @@
 import { render } from 'lit-html';
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { html, customElement, property, PropertyValues } from 'lit-element';
+import { html, property, PropertyValues, customElement } from 'lit-element';
 
 import '@vaadin/vaadin-item';
 import '@vaadin/vaadin-select';
@@ -12,12 +12,7 @@ import { DatePickerValueChanged } from '@vaadin/vaadin-date-picker';
 
 import { ValueChangedEvent } from './events';
 
-import {
-  today,
-  weeksAgo,
-  serializeDateRange,
-  deserializeDateRange,
-} from './helpers';
+import { serializeDateRange, deserializeDateRange } from './helpers';
 
 @customElement('x-date-range-picker')
 export class XDateRangePickerElement extends MobxLitElement {
@@ -54,16 +49,7 @@ export class XDateRangePickerElement extends MobxLitElement {
    * defined in the `delimiter` property (default: `|`).
    */
   @property({ type: Array })
-  ranges = [
-    {
-      title: 'Last 2 weeks',
-      value: serializeDateRange([weeksAgo(2), today()], this.delimiter),
-    },
-    {
-      title: 'Last 4 weeks',
-      value: serializeDateRange([weeksAgo(4), today()], this.delimiter),
-    },
-  ];
+  ranges: Array<{ title: string; value: string }> = [];
 
   updated(changedProperties: PropertyValues) {
     if (changedProperties.has('value')) {
@@ -139,13 +125,17 @@ export class XDateRangePickerElement extends MobxLitElement {
   render() {
     return html`
       <div class="wrapper">
-        <vaadin-select
-          id="range-select"
-          label="Select range"
-          .value="${this.selectValue}"
-          @value-changed="${this.onSelectValueChanged}"
-          .renderer="${this.renderSelect}"
-        ></vaadin-select>
+        ${this.ranges.length > 0
+          ? html`
+              <vaadin-select
+                id="range-select"
+                label="Select range"
+                .value="${this.selectValue}"
+                @value-changed="${this.onSelectValueChanged}"
+                .renderer="${this.renderSelect}"
+              ></vaadin-select>
+            `
+          : html``}
 
         <vaadin-date-picker
           id="start-date-picker"
