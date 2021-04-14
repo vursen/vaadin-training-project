@@ -8,15 +8,15 @@ export function format(date: Date) {
 /**
  * Serializes the date range into a string
  */
-export function serializeDateRange(range: Array<string | undefined>) {
-  return range.filter(Boolean).join('|');
+export function serializeDateRange(range: string[], delimiter: string) {
+  return range.filter(Boolean).join(delimiter);
 }
 
 /**
  * Deserializes the date range from a string
  */
-export function deserializeDateRange(range: string) {
-  const [from = '', to = ''] = range.split('|');
+export function deserializeDateRange(range: string, delimiter: string) {
+  const [from = '', to = ''] = range.split(delimiter);
 
   return [from, to];
 }
@@ -26,9 +26,11 @@ export function deserializeDateRange(range: string) {
  * returns the resulting date in ISO format
  */
 export function weeksAgo(weeks: number) {
-  return format(
-    new Date(Date.now() - 1000 * 60 * 60 * 24 * 7 /* days */ * weeks)
+  const date = new Date(
+    Date.now() - 1000 * 60 * 60 * 24 * 7 /* days */ * weeks
   );
+
+  return format(date);
 }
 
 /**

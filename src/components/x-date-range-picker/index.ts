@@ -57,20 +57,20 @@ export class XDateRangePickerElement extends MobxLitElement {
   ranges = [
     {
       title: 'Last 2 weeks',
-      value: serializeDateRange([weeksAgo(2), today()]),
+      value: serializeDateRange([weeksAgo(2), today()], this.delimiter),
     },
     {
       title: 'Last 4 weeks',
-      value: serializeDateRange([weeksAgo(4), today()]),
+      value: serializeDateRange([weeksAgo(4), today()], this.delimiter),
     },
   ];
 
   get startValue() {
-    return deserializeDateRange(this.value)[0];
+    return deserializeDateRange(this.value, this.delimiter)[0];
   }
 
   get endValue() {
-    return deserializeDateRange(this.value)[1];
+    return deserializeDateRange(this.value, this.delimiter)[1];
   }
 
   get selectValue() {
@@ -93,7 +93,7 @@ export class XDateRangePickerElement extends MobxLitElement {
   onStartValueChanged(event: DatePickerValueChanged) {
     const { value } = event.detail;
 
-    this.value = serializeDateRange([value, this.endValue]);
+    this.value = serializeDateRange([value, this.endValue], this.delimiter);
 
     if (this.startValue && this.endValue) {
       this.dispatchEvent(new ValueChangedEvent({ value }));
@@ -103,7 +103,7 @@ export class XDateRangePickerElement extends MobxLitElement {
   onEndValueChanged(event: DatePickerValueChanged) {
     const { value } = event.detail;
 
-    this.value = serializeDateRange([this.startValue, value]);
+    this.value = serializeDateRange([this.startValue, value], this.delimiter);
 
     if (this.startValue && this.endValue) {
       this.dispatchEvent(new ValueChangedEvent({ value }));
