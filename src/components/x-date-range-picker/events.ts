@@ -3,7 +3,11 @@
  */
 export class ValueChangedEvent extends CustomEvent<ValueChangedEventDetail> {
   constructor(detail: ValueChangedEventDetail) {
-    super('value-changed', { detail });
+    super('value-changed', {
+      detail,
+      bubbles: true,
+      composed: true,
+    });
   }
 }
 

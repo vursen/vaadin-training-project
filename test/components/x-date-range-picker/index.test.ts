@@ -1,3 +1,4 @@
+import sinon from 'sinon';
 import { expect, fixture, html } from '@open-wc/testing';
 
 import { SelectElement } from '@vaadin/vaadin-select';
@@ -24,6 +25,37 @@ describe('x-date-range-picker', () => {
     expect(rangeSelectElement.value).to.equal('');
     expect(startDateElement.value).to.equal('');
     expect(endDateElement.value).to.equal('');
+  });
+
+  describe('delimiter', () => {
+    it('should use the defined delimiter to deserialize the value', async () => {
+      element.delimiter = '!';
+      element.value = '2021-01-01!2021-01-07';
+
+      await element.updateComplete;
+
+      expect(startDateElement.value).to.equal('2021-01-01');
+      expect(endDateElement.value).to.equal('2021-01-07');
+    });
+
+    it('should use the defined delimiter to serialize the value', async () => {
+      const spy = sinon.spy();
+
+      element.addEventListener('value-changed', spy);
+      element.delimiter = '!';
+
+      startDateElement.value = '2021-01-01';
+      endDateElement.value = '2021-01-07';
+
+      await element.updateComplete;
+
+      expect(spy).to.be.calledOnce;
+      expect(spy).to.be.calledWithMatch({
+        detail: {
+          value: '2021-01-01!2021-01-07',
+        },
+      });
+    });
   });
 
   describe('date limits', () => {
