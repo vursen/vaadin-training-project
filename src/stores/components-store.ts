@@ -1,6 +1,8 @@
 import { makeAutoObservable, runInAction } from 'mobx';
 
-import { api } from '../api/index.js';
+import { parseDate, formatDate } from '../helpers/date';
+
+import { api } from '../api';
 
 export interface IComponent {
   name: string;
@@ -25,12 +27,12 @@ export interface IContext {
 
 export class ComponentsStore {
   /**
-   * Keeps the components as a map where the key is a component name
+   * The components as a map where the key is a component name
    */
   componentsMap = new Map<IComponent['name'], IComponent>();
 
   /**
-   * Keeps the statistics of components as a map where the key is a component name
+   * The statistics of components as a map where the key is a component name
    */
   statisticsMap = new Map<IComponentStatistics['name'], IComponentStatistics>();
 
@@ -42,14 +44,14 @@ export class ComponentsStore {
   }
 
   /**
-   * Returns the components as an array
+   * The components as an array
    */
   get components() {
     return [...this.componentsMap.values()];
   }
 
   /**
-   * Returns the statistics of components as an array
+   * The statistics of components as an array
    */
   get statistics() {
     return [...this.statisticsMap.values()];
@@ -95,8 +97,13 @@ export class ComponentsStore {
           0
         );
 
+        // Parses an original date that comes up in the `dd/mm/yyyy` date format
+        const parsedDate = parseDate(date);
+        // Stores the parsed date in ISO format
+        const parsedDateISO = formatDate(parsedDate);
+
         return {
-          date,
+          date: parsedDateISO,
           total,
           versions,
         };

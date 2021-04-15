@@ -1,4 +1,5 @@
 import sinon from 'sinon';
+import { when } from 'mobx';
 import { expect } from '@open-wc/testing';
 
 import { api } from '../../../src/api';
@@ -8,12 +9,14 @@ import { ComponentsStore } from '../../../src/stores/components-store';
 import { Store } from '../../../src/pages/x-overview-page/store';
 
 import * as fixtures from '../../fixtures';
+import { ReferencePeriodStore } from '../../../src/stores/reference-period-store';
 
 describe('overview page store', () => {
   let sandbox: sinon.SinonSandbox;
 
   let store: Store;
   let componentsStore: ComponentsStore;
+  let referencePeriodStore: ReferencePeriodStore;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -28,8 +31,11 @@ describe('overview page store', () => {
       api,
     });
 
+    referencePeriodStore = new ReferencePeriodStore();
+
     store = new Store({
       componentsStore,
+      referencePeriodStore,
     });
 
     await componentsStore.fetchComponents();
@@ -49,23 +55,22 @@ describe('overview page store', () => {
     });
   });
 
-  it('should aggregates the grid item totals', () => {
-    expect(store.gridItems[0]).to.include({
-      total: 218,
-      totalOverWeek: 146,
-      totalOverCustomPeriod: 218,
-    });
+  it(`should calculate the grid items' totals`, () => {
+    expect(store.gridItems[0].total).to.equal(218);
+    expect(store.gridItems[0].totalOverWeek).to.equal(146);
+    expect(store.gridItems[0].totalOverPeriod).to.equal(0);
 
     expect(store.gridItems[0].weeks).to.have.lengthOf(3);
-    expect(store.gridItems[0].weeks[0]).to.include({
-      date: '15/03/2021',
-      total: 29,
-    });
+    expect(store.gridItems[0].weeks[0].total).to.equal(29);
   });
 
-  // it('should aggregate the totals of items with the custom period', () => {
-  //   // TODO: Implement
-  // })
+  it(`should calculate the grid items' totals when setting the reference period`, async () => {
+    referencePeriodStore.setPeriod('2021-03-22|2021-03-29');
+
+    await when(() => referencePeriodStore.period !== '');
+
+    expect(store.gridItems[0].totalOverPeriod).to.equal(189);
+  });
 
   it('should set the selected grid items', () => {
     store.setSelectedGridItems(['vaadin-button']);

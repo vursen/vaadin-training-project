@@ -6,6 +6,7 @@ import '@vaadin/vaadin-grid/vaadin-grid-column-group';
 import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
 import { store } from './store';
+import { referencePeriodStore } from '../../stores/reference-period-store';
 
 import '../../components/x-date-range-picker';
 
@@ -60,7 +61,12 @@ export class XOverviewPageElement extends MobxLitElement {
       <div class="wrapper">
         <h1 class="title">Overview</h1>
 
-        <x-date-range-picker class="date-range-picker"></x-date-range-picker>
+        <x-date-range-picker
+          class="date-range-picker"
+          .value="${referencePeriodStore.period}"
+          .ranges="${referencePeriodStore.periods}"
+          @value-changed="${referencePeriodStore.setPeriod}"
+        ></x-date-range-picker>
 
         <x-overview-page-autocomplete
           class="autocomplete"

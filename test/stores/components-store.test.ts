@@ -58,7 +58,7 @@ describe('components store', () => {
 
     expect(component.downloads).to.have.lengthOf(3);
     expect(component.downloads[0]).to.deep.equal({
-      date: '15/03/2021',
+      date: '2021-03-15',
       total: 29,
       versions: {
         '20.0.0-alpha2': 0,

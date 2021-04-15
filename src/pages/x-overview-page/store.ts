@@ -1,9 +1,11 @@
 import { action, makeAutoObservable } from 'mobx';
 
 import { componentsStore } from '../../stores/components-store';
+import { referencePeriodStore } from '../../stores/reference-period-store';
 
 interface IContext {
   componentsStore: typeof componentsStore;
+  referencePeriodStore: typeof referencePeriodStore;
 }
 
 export interface IGridItem {
@@ -13,24 +15,21 @@ export interface IGridItem {
   weeks: Array<{ date: string; total: number }>;
   total: number;
   totalOverWeek: number;
-  totalOverCustomPeriod: number;
+  totalOverPeriod: number;
 }
 
 export class Store {
   /**
-   * Keeps the custom period
-   */
-  customPeriod = null;
-
-  /**
-   * Keeps the ids of the selected items as a set
+   * The ids of the selected items as a set
    */
   selectedGridItemIds = new Set<IGridItem['id']>();
 
   /**
    * Constructor
    */
-  constructor(private context: IContext = { componentsStore }) {
+  constructor(
+    private context: IContext = { componentsStore, referencePeriodStore }
+  ) {
     makeAutoObservable(this, {
       selectGridItem: action,
       setSelectedGridItems: action,
@@ -59,28 +58,27 @@ export class Store {
   }
 
   /**
-   * Takes the statistics of components, aggregates the totals over the entire period,
-   * the last week, the custom period and returns the result as a list
-   * that can be later used in `<vaadin-grid />`
+   * An array of components' statistics obtained by aggregating the component's downloads
+   * over some periods. Could be later used within `<vaadin-grid />`
    */
   get gridItems(): IGridItem[] {
-    const { componentsStore } = this.context;
+    const { componentsStore, referencePeriodStore } = this.context;
 
     return [...componentsStore.statistics.values()].map(
       ({ name, downloads: weeks }) => {
         const { npmName } = componentsStore.componentsMap.get(name)!;
 
-        // Aggregates the total of downloads over weeks
+        // Aggregates the downloads over weeks
         const total = weeks.reduce((sum, { total }) => sum + total, 0);
 
-        // Aggregates the total of downloads over the last week
+        // Aggregates the downloads over the last week
         const totalOverWeek = weeks[weeks.length - 1].total;
 
-        // Aggregates the total of downloads over the custom period
-        const totalOverCustomPeriod = weeks
-          // .filter(({ date }) => {
-          //   date
-          // })
+        // Aggregates the downloads over the custom period
+        const totalOverPeriod = weeks
+          .filter(({ date }) => {
+            return referencePeriodStore.contains(date);
+          })
           .reduce((sum, { total }) => sum + total, 0);
 
         return {
@@ -90,21 +88,21 @@ export class Store {
           weeks,
           total,
           totalOverWeek,
-          totalOverCustomPeriod,
+          totalOverPeriod,
         };
       }
     );
   }
 
   /**
-   * Returns only the selected grid items
+   * Only the selected grid items
    */
   get selectedGridItems(): IGridItem[] {
     return this.gridItems.filter(({ id }) => this.isGridItemSelected(id));
   }
 
   /**
-   * Returns the series for the downloads chart
+   * The series for the downloads chart
    */
   get chartSeries() {
     return this.selectedGridItems.map(({ name, weeks }) => {
@@ -116,7 +114,7 @@ export class Store {
   }
 
   /**
-   * Returns the categories for the downloads chart
+   * The categories for the downloads chart
    */
   get chartCategories() {
     return this.selectedGridItems[0]?.weeks.map(({ date }) => {
