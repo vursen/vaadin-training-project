@@ -32,9 +32,9 @@ export class XOverviewPageGridElement extends MobxLitElement {
       return;
     }
 
-    const selectedItemIds = selectedItems.map(({ id }) => id);
+    const selectedItemNames = selectedItems.map(({ name }) => name);
 
-    store.setSelectedGridItems(selectedItemIds);
+    store.setSelectedGridItems(selectedItemNames);
   }
 
   renderNameColumn(
@@ -75,7 +75,7 @@ export class XOverviewPageGridElement extends MobxLitElement {
 
           <vaadin-grid-column-group header="Downloads" text-align="center">
             <vaadin-grid-column
-              path="totalOverCustomPeriod"
+              path="totalOverPeriod"
               header="Selected range"
             ></vaadin-grid-column>
 

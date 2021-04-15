@@ -9,6 +9,7 @@ import { store } from './store';
 import { periodStore } from '../../stores/period-store';
 
 import '../../components/x-date-range-picker';
+import { XDateRangePickerValueChangedEvent } from '../../components/x-date-range-picker';
 
 import './x-grid';
 import './x-chart';
@@ -52,6 +53,10 @@ export class XOverviewPageElement extends MobxLitElement {
     `;
   }
 
+  onDateRangePickerValueChanged(event: XDateRangePickerValueChangedEvent) {
+    periodStore.setPeriod(event.detail.value);
+  }
+
   get isDownloadsVisible() {
     return store.gridItems.length > 0;
   }
@@ -65,7 +70,7 @@ export class XOverviewPageElement extends MobxLitElement {
           class="date-range-picker"
           .value="${periodStore.period}"
           .ranges="${periodStore.periods}"
-          @value-changed="${periodStore.setPeriod}"
+          @value-changed="${this.onDateRangePickerValueChanged}"
         ></x-date-range-picker>
 
         <x-overview-page-autocomplete

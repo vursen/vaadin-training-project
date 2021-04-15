@@ -9,20 +9,23 @@ interface IContext {
 }
 
 export interface IGridItem {
-  id: string;
   name: string;
   npmName: string;
-  weeks: Array<{ date: string; total: number }>;
   total: number;
   totalOverWeek: number;
   totalOverPeriod: number;
 }
 
+export interface IChartItem {
+  name: string;
+  weeks: Array<{ date: string; total: number }>;
+}
+
 export class Store {
   /**
-   * The ids of the selected items as a set
+   * The names of the selected grid items as a set
    */
-  selectedGridItemIds = new Set<IGridItem['id']>();
+  selectedGridItemNames = new Set<IGridItem['name']>();
 
   /**
    * Constructor
@@ -35,75 +38,89 @@ export class Store {
   }
 
   /**
-   * Replaces selected grid item ids with the new ones
+   * Replaces selected grid item names with the new ones
    */
-  setSelectedGridItems(ids: Array<IGridItem['id']>) {
-    this.selectedGridItemIds = new Set(ids);
+  setSelectedGridItems(names: Array<IGridItem['name']>) {
+    this.selectedGridItemNames = new Set(names);
   }
 
   /**
    * Selects the grid item
    */
-  selectGridItem(id: IGridItem['id']) {
-    this.selectedGridItemIds.add(id);
+  selectGridItem(name: IGridItem['name']) {
+    this.selectedGridItemNames.add(name);
   }
 
   /**
    * Returns true if the grid item is selected and false otherwise
    */
-  isGridItemSelected(id: IGridItem['id']) {
-    return this.selectedGridItemIds.has(id);
+  isGridItemSelected(name: IGridItem['name']) {
+    return this.selectedGridItemNames.has(name);
   }
 
   /**
-   * An array of components' statistics obtained by aggregating the component's downloads
-   * over some periods. Could be later used within `<vaadin-grid />`
+   * An array of the grid items based on
+   * the components' statistics aggregating some totals.
    */
   get gridItems(): IGridItem[] {
     const { componentsStore, periodStore } = this.context;
 
-    return [...componentsStore.statistics.values()].map(
-      ({ name, downloads: weeks }) => {
-        const { npmName } = componentsStore.componentsMap.get(name)!;
+    return componentsStore.statistics.map(({ name, downloads: weeks }) => {
+      const { npmName } = componentsStore.componentsMap.get(name)!;
 
-        // Aggregates the downloads over weeks
-        const total = weeks.reduce((sum, { total }) => sum + total, 0);
+      // Aggregates the downloads over weeks
+      const total = weeks.reduce((sum, { total }) => sum + total, 0);
 
-        // Aggregates the downloads over the last week
-        const totalOverWeek = weeks[weeks.length - 1].total;
+      // Aggregates the downloads over the last week
+      const totalOverWeek = weeks[weeks.length - 1].total;
 
-        // Aggregates the downloads over the custom period
-        const totalOverPeriod = weeks
-          .filter(({ date }) => {
-            return periodStore.includes(date);
-          })
-          .reduce((sum, { total }) => sum + total, 0);
+      // Aggregates the downloads over the custom period
+      const totalOverPeriod = weeks
+        .filter(({ date }) => {
+          return periodStore.includes(date);
+        })
+        .reduce((sum, { total }) => sum + total, 0);
 
-        return {
-          id: name,
-          name,
-          npmName,
-          weeks,
-          total,
-          totalOverWeek,
-          totalOverPeriod,
-        };
-      }
-    );
+      return {
+        name,
+        npmName,
+        total,
+        totalOverWeek,
+        totalOverPeriod,
+      };
+    });
   }
 
   /**
-   * Only the selected grid items
+   * An array of the selected grid items
    */
-  get selectedGridItems(): IGridItem[] {
-    return this.gridItems.filter(({ id }) => this.isGridItemSelected(id));
+  get selectedGridItems() {
+    return this.gridItems.filter(({ name }) => this.isGridItemSelected(name));
   }
 
   /**
-   * The series for the downloads chart
+   * An array of the chart items based on the components' statistics
+   */
+  get chartItems(): IChartItem[] {
+    const { componentsStore } = this.context;
+
+    return componentsStore.statistics
+      .map(({ name, downloads: weeks }) => {
+        return {
+          name,
+          weeks,
+        };
+      })
+      .filter(({ name }) => {
+        return this.isGridItemSelected(name);
+      });
+  }
+
+  /**
+   * An array of the chart series
    */
   get chartSeries() {
-    return this.selectedGridItems.map(({ name, weeks }) => {
+    return this.chartItems.map(({ name, weeks }) => {
       return {
         title: name,
         values: weeks.map(({ total }) => total),
@@ -112,11 +129,11 @@ export class Store {
   }
 
   /**
-   * The categories for the downloads chart
+   * An array of the chart categories
    */
   get chartCategories() {
-    return this.selectedGridItems[0]?.weeks.map(({ date }) => {
-      const [day, month] = date.split('/');
+    return this.chartItems[0]?.weeks.map(({ date }) => {
+      const [, month, day] = date.split('-');
 
       // Format date as `dd/mm`
       return `${day}/${month}`;

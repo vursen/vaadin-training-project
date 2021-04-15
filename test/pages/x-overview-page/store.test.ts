@@ -1,5 +1,4 @@
 import sinon from 'sinon';
-import { when } from 'mobx';
 import { expect } from '@open-wc/testing';
 
 import { api } from '../../../src/api';
@@ -46,36 +45,42 @@ describe('overview page store', () => {
     sandbox.restore();
   });
 
-  it('should have a gridItems getter', () => {
+  it('should compute grid items', () => {
     expect(store.gridItems).to.have.lengthOf(1);
     expect(store.gridItems[0]).to.include({
-      id: 'vaadin-button',
       name: 'vaadin-button',
       npmName: '@vaadin/vaadin-button',
     });
   });
 
-  it(`should calculate the grid items' totals`, () => {
+  it(`should aggregate the grid item' totals`, () => {
     expect(store.gridItems[0].total).to.equal(218);
     expect(store.gridItems[0].totalOverWeek).to.equal(146);
-    expect(store.gridItems[0].totalOverPeriod).to.equal(0);
-
-    expect(store.gridItems[0].weeks).to.have.lengthOf(3);
-    expect(store.gridItems[0].weeks[0].total).to.equal(29);
+    expect(store.gridItems[0].totalOverPeriod).to.equal(218);
   });
 
-  it(`should calculate the grid items' totals when setting the reference period`, async () => {
+  it(`should aggregate the grid item' totals when setting the period`, async () => {
     periodStore.setPeriod('2021-03-22|2021-03-29');
-
-    await when(() => periodStore.period !== '');
 
     expect(store.gridItems[0].totalOverPeriod).to.equal(189);
   });
 
-  it('should set the selected grid items', () => {
+  it('should select a grid item', () => {
     store.setSelectedGridItems(['vaadin-button']);
 
-    expect(store.selectedGridItemIds.size).to.equal(1);
-    expect(store.selectedGridItemIds.has('vaadin-button')).to.be.true;
+    expect(store.selectedGridItemNames.size).to.equal(1);
+    expect(store.selectedGridItemNames.has('vaadin-button')).to.be.true;
+  });
+
+  it('should not have any chart items by default', () => {
+    expect(store.chartItems).to.have.lengthOf(0);
+  });
+
+  it('should compute chart items when selecting a grid item', () => {
+    store.setSelectedGridItems(['vaadin-button']);
+
+    expect(store.chartItems).to.have.lengthOf(1);
+    expect(store.chartItems[0].weeks).to.have.lengthOf(3);
+    expect(store.chartItems[0].weeks[0].total).to.equal(29);
   });
 });

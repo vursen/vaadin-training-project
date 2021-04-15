@@ -6,7 +6,7 @@ const DELIMITER = '|';
 
 export class PeriodStore {
   /**
-   * The reference period that is represented as a date range in ISO format
+   * The period that is represented as a date range in ISO format
    * with taking `|` as a date range delimiter.
    */
   period = '';
@@ -21,44 +21,46 @@ export class PeriodStore {
   }
 
   /**
-   * The start date of the reference period
+   * The start date of the period
    */
   get startDate() {
-    return new Date(this.period.split(DELIMITER)[0] ?? '');
+    return this.period.split(DELIMITER)[0] ?? '';
   }
 
   /**
-   * The end date of the reference period
+   * The end date of the period
    */
   get endDate() {
-    return new Date(this.period.split(DELIMITER)[1] ?? '');
+    return this.period.split(DELIMITER)[1] ?? '';
   }
 
   /**
-   * Pre-defined reference periods
+   * Pre-defined periods
    */
   get periods() {
     return [
-      { title: 'Last 2 weeks', value: [today(), weeksAgo(2)].join(DELIMITER) },
-      { title: 'Last 4 weeks', value: [today(), weeksAgo(4)].join(DELIMITER) },
+      { title: 'Last 2 weeks', value: [weeksAgo(2), today()].join(DELIMITER) },
+      { title: 'Last 4 weeks', value: [weeksAgo(4), today()].join(DELIMITER) },
     ];
   }
 
   /**
-   * Replaces the reference period with the new one
+   * Replaces the period with the new one
    */
   setPeriod(period: PeriodStore['period']) {
     this.period = period;
   }
 
   /**
-   * Returns true if the reference period contains the given date,
-   * otherwise false
+   * Returns true if the period contains the given date and false otherwise
    */
   includes(date: string) {
-    const parsedDate = new Date(date);
+    if (this.period === '') return true;
 
-    return parsedDate >= this.startDate && parsedDate <= this.endDate;
+    return (
+      new Date(date) >= new Date(this.startDate) &&
+      new Date(date) <= new Date(this.endDate)
+    );
   }
 }
 
