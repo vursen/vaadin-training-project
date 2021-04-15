@@ -64,14 +64,14 @@ describe('x-date-range-picker helpers', () => {
       expect(deserializeDateRange(range, '|')).to.deep.equal(expectedRange);
     });
 
-    it('should deserialize a date range with there is only the start date', () => {
+    it('should deserialize a date range with only a start date', () => {
       const range = '2021-01-01|';
       const expectedRange = ['2021-01-01', ''];
 
       expect(deserializeDateRange(range, '|')).to.deep.equal(expectedRange);
     });
 
-    it('should deserialize a date range when there is only the end date', () => {
+    it('should deserialize a date range with only an end date', () => {
       const range = '|2021-01-01';
       const expectedRange = ['', '2021-01-01'];
 

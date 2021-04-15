@@ -27,7 +27,7 @@ describe('x-date-range-picker', () => {
   });
 
   describe('date pickers', () => {
-    it(`should not fire the 'value-changed' event when setting start date`, async () => {
+    it(`should not fire the 'value-changed' event when setting only a start date`, async () => {
       const spy = sinon.spy();
       element.addEventListener('value-changed', spy);
 
@@ -38,7 +38,7 @@ describe('x-date-range-picker', () => {
       expect(spy).not.to.be.called;
     });
 
-    it(`should not fire the 'value-changed' event when setting end date`, async () => {
+    it(`should not fire the 'value-changed' event when setting only an end date`, async () => {
       const spy = sinon.spy();
       element.addEventListener('value-changed', spy);
 
@@ -49,7 +49,7 @@ describe('x-date-range-picker', () => {
       expect(spy).not.to.be.called;
     });
 
-    it(`should fire the 'value-changed' event when setting date range`, async () => {
+    it(`should fire the 'value-changed' event when setting a date range`, async () => {
       const spy = sinon.spy();
       element.addEventListener('value-changed', spy);
 
@@ -68,7 +68,7 @@ describe('x-date-range-picker', () => {
   });
 
   describe('delimiter property', () => {
-    it('should use the `delimiter` property to deserialize value', async () => {
+    it('should use the `delimiter` property when deserializing a value', async () => {
       element.delimiter = '!';
       element.value = '2021-01-01!2021-01-07';
 
@@ -78,7 +78,7 @@ describe('x-date-range-picker', () => {
       expect(endDateElement().value).to.equal('2021-01-07');
     });
 
-    it('should use the `delimiter` property to serialize value', async () => {
+    it('should use the `delimiter` property when serializing a value', async () => {
       const spy = sinon.spy();
       element.addEventListener('value-changed', spy);
 
@@ -120,7 +120,7 @@ describe('x-date-range-picker', () => {
     //   expect(rangeSelectElement);
     // });
 
-    it(`should fire the 'value-changed' event when selecting pre-defined range`, async () => {
+    it(`should fire the 'value-changed' event when selecting the pre-defined range`, async () => {
       const spy = sinon.spy();
       element.addEventListener('value-changed', spy);
 
@@ -136,7 +136,7 @@ describe('x-date-range-picker', () => {
       });
     });
 
-    it(`should update the date pickers when selecting pre-defined range`, async () => {
+    it(`should update the date pickers when selecting the pre-defined range`, async () => {
       rangeSelectElement()!.value = '2021-01-01|2021-01-14';
 
       await element.updateComplete;
@@ -145,7 +145,7 @@ describe('x-date-range-picker', () => {
       expect(endDateElement().value).to.equal('2021-01-14');
     });
 
-    it('should disable the date pickers when selecting pre-defined range', async () => {
+    it('should disable the date pickers when selecting the pre-defined range', async () => {
       rangeSelectElement()!.value = '2021-01-01|2021-01-14';
 
       await element.updateComplete;
@@ -154,7 +154,7 @@ describe('x-date-range-picker', () => {
       expect(endDateElement().disabled).to.be.true;
     });
 
-    it(`should hide the range select when pre-defined ranges not passed`, async () => {
+    it(`should hide the range select when no pre-defined ranges`, async () => {
       element.ranges = [];
 
       await element.updateComplete;
@@ -164,7 +164,7 @@ describe('x-date-range-picker', () => {
   });
 
   describe('date limits', () => {
-    it('should set the min date limit when changing value', async () => {
+    it('should set the min date limit when setting a value', async () => {
       element.value = '2021-01-01|';
 
       await element.updateComplete;
@@ -173,7 +173,7 @@ describe('x-date-range-picker', () => {
       expect(endDateElement().min).to.equal('2021-01-01');
     });
 
-    it('should set the max date limit when changing value', async () => {
+    it('should set the max date limit when setting a value', async () => {
       element.value = '|2021-01-01';
 
       await element.updateComplete;
@@ -182,7 +182,7 @@ describe('x-date-range-picker', () => {
       expect(endDateElement().min).to.equal('');
     });
 
-    it('should set the min-max date limit when changing value', async () => {
+    it('should set the min-max date limit when setting a value', async () => {
       element.value = '2021-01-01|2021-01-07';
 
       await element.updateComplete;
