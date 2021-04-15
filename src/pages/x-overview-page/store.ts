@@ -1,11 +1,11 @@
 import { action, makeAutoObservable } from 'mobx';
 
 import { componentsStore } from '../../stores/components-store';
-import { referencePeriodStore } from '../../stores/reference-period-store';
+import { periodStore } from '../../stores/period-store';
 
 interface IContext {
+  periodStore: typeof periodStore;
   componentsStore: typeof componentsStore;
-  referencePeriodStore: typeof referencePeriodStore;
 }
 
 export interface IGridItem {
@@ -27,9 +27,7 @@ export class Store {
   /**
    * Constructor
    */
-  constructor(
-    private context: IContext = { componentsStore, referencePeriodStore }
-  ) {
+  constructor(private context: IContext = { periodStore, componentsStore }) {
     makeAutoObservable(this, {
       selectGridItem: action,
       setSelectedGridItems: action,
@@ -62,7 +60,7 @@ export class Store {
    * over some periods. Could be later used within `<vaadin-grid />`
    */
   get gridItems(): IGridItem[] {
-    const { componentsStore, referencePeriodStore } = this.context;
+    const { componentsStore, periodStore } = this.context;
 
     return [...componentsStore.statistics.values()].map(
       ({ name, downloads: weeks }) => {
@@ -77,7 +75,7 @@ export class Store {
         // Aggregates the downloads over the custom period
         const totalOverPeriod = weeks
           .filter(({ date }) => {
-            return referencePeriodStore.contains(date);
+            return periodStore.includes(date);
           })
           .reduce((sum, { total }) => sum + total, 0);
 

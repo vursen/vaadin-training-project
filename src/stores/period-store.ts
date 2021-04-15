@@ -4,7 +4,7 @@ import { today, weeksAgo } from '../helpers/date';
 
 const DELIMITER = '|';
 
-export class ReferencePeriodStore {
+export class PeriodStore {
   /**
    * The reference period that is represented as a date range in ISO format
    * with taking `|` as a date range delimiter.
@@ -47,7 +47,7 @@ export class ReferencePeriodStore {
   /**
    * Replaces the reference period with the new one
    */
-  setPeriod(period: ReferencePeriodStore['period']) {
+  setPeriod(period: PeriodStore['period']) {
     this.period = period;
   }
 
@@ -55,11 +55,11 @@ export class ReferencePeriodStore {
    * Returns true if the reference period contains the given date,
    * otherwise false
    */
-  contains(date: string) {
+  includes(date: string) {
     const parsedDate = new Date(date);
 
     return parsedDate >= this.startDate && parsedDate <= this.endDate;
   }
 }
 
-export const referencePeriodStore = new ReferencePeriodStore();
+export const periodStore = new PeriodStore();

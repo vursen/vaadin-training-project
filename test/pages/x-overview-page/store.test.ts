@@ -9,14 +9,14 @@ import { ComponentsStore } from '../../../src/stores/components-store';
 import { Store } from '../../../src/pages/x-overview-page/store';
 
 import * as fixtures from '../../fixtures';
-import { ReferencePeriodStore } from '../../../src/stores/reference-period-store';
+import { PeriodStore } from '../../../src/stores/period-store';
 
 describe('overview page store', () => {
   let sandbox: sinon.SinonSandbox;
 
   let store: Store;
+  let periodStore: PeriodStore;
   let componentsStore: ComponentsStore;
-  let referencePeriodStore: ReferencePeriodStore;
 
   beforeEach(async () => {
     sandbox = sinon.createSandbox();
@@ -27,15 +27,15 @@ describe('overview page store', () => {
   });
 
   beforeEach(async () => {
+    periodStore = new PeriodStore();
+
     componentsStore = new ComponentsStore({
       api,
     });
 
-    referencePeriodStore = new ReferencePeriodStore();
-
     store = new Store({
+      periodStore,
       componentsStore,
-      referencePeriodStore,
     });
 
     await componentsStore.fetchComponents();
@@ -65,9 +65,9 @@ describe('overview page store', () => {
   });
 
   it(`should calculate the grid items' totals when setting the reference period`, async () => {
-    referencePeriodStore.setPeriod('2021-03-22|2021-03-29');
+    periodStore.setPeriod('2021-03-22|2021-03-29');
 
-    await when(() => referencePeriodStore.period !== '');
+    await when(() => periodStore.period !== '');
 
     expect(store.gridItems[0].totalOverPeriod).to.equal(189);
   });
