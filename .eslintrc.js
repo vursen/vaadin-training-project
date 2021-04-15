@@ -2,6 +2,7 @@ module.exports = {
   extends: 'vaadin',
   rules: {
     'no-shadow': 'off',
+    'max-classes-per-file': 'off',
     'no-unused-expressions': 'off',
 
     'import/no-cycle': 'off',
