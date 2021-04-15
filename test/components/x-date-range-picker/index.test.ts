@@ -1,6 +1,7 @@
 import sinon from 'sinon';
 import { expect, fixture, html } from '@open-wc/testing';
 
+import { ItemElement } from '@vaadin/vaadin-item';
 import { SelectElement } from '@vaadin/vaadin-select';
 import { DatePickerElement } from '@vaadin/vaadin-date-picker';
 
@@ -110,15 +111,23 @@ describe('x-date-range-picker', () => {
       await element.updateComplete;
     });
 
-    it(`should not have selected any pre-defined range when initialized`, () => {
+    it('should render the pre-defined ranges', () => {
+      const options = rangeSelectElement()!.shadowRoot!.querySelectorAll<ItemElement>(
+        'vaadin-list-box vaadin-item'
+      );
+
+      expect(options).to.have.lengthOf(2);
+      expect(options[0].value).to.equal('');
+      expect(options[0].textContent).to.equal('Custom range');
+      expect(options[1].value).to.equal('2021-01-01|2021-01-14');
+      expect(options[1].textContent).to.equal('Last 2 weeks');
+    });
+
+    it(`should not have selected any pre-defined range by default`, () => {
       expect(rangeSelectElement()!.value).to.equal('');
       expect(startDateElement().value).to.equal('');
       expect(endDateElement().value).to.equal('');
     });
-
-    // it('should render the list of pre-defined ranges', () => {
-    //   expect(rangeSelectElement);
-    // });
 
     it(`should fire the 'value-changed' event when selecting the pre-defined range`, async () => {
       const spy = sinon.spy();
