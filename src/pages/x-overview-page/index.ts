@@ -14,7 +14,7 @@ import './x-chart';
 import './x-autocomplete';
 
 @customElement('x-overview-page')
-export class XOverviewPage extends MobxLitElement {
+export class XOverviewPageElement extends MobxLitElement {
   @internalProperty()
   isLoading = false;
 

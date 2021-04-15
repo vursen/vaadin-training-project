@@ -17,7 +17,7 @@ import { GridColumnElement } from '@vaadin/vaadin-grid/vaadin-grid-column';
 import { store, Store } from './store';
 
 @customElement('x-overview-page-grid')
-export class XOverviewPageGrid extends MobxLitElement {
+export class XOverviewPageGridElement extends MobxLitElement {
   @query('#grid')
   grid!: GridElement;
 
