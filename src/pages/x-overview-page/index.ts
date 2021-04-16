@@ -7,6 +7,7 @@ import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
 import { store } from './store';
 import { periodStore } from '../../stores/period-store';
+import { componentsStore } from '../../stores/components-store';
 
 import '../../components/x-date-range-picker';
 import { XDateRangePickerValueChangedEvent } from '../../components/x-date-range-picker';
@@ -15,6 +16,10 @@ import './x-grid';
 import './x-chart';
 import './x-autocomplete';
 
+export async function fetch() {
+  await componentsStore.fetchComponents();
+}
+
 @customElement('x-overview-page')
 export class XOverviewPageElement extends MobxLitElement {
   @internalProperty()
@@ -22,10 +27,6 @@ export class XOverviewPageElement extends MobxLitElement {
 
   static get styles() {
     return css`
-      .wrapper {
-        padding: var(--lumo-space-m);
-      }
-
       .title {
         margin: 0 0 var(--lumo-space-s);
         font-size: var(--lumo-font-size-xxl);
