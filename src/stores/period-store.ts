@@ -7,7 +7,9 @@ const DELIMITER = '|';
 export class PeriodStore {
   /**
    * The period that is represented as a date range in ISO format
-   * with taking `|` as a date range delimiter.
+   * using `|` as a date range delimiter.
+   *
+   * `YYYY-MM-DD|YYYY-MM-DD`
    */
   period = '';
 
@@ -52,7 +54,7 @@ export class PeriodStore {
   }
 
   /**
-   * Returns true if the period contains the given date and false otherwise
+   * Returns true if the period includes the given date and false otherwise
    */
   includes(date: string) {
     if (this.period === '') return true;
