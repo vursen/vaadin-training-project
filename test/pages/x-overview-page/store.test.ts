@@ -8,11 +8,13 @@ import { ComponentsStore } from '../../../src/stores/components-store';
 import { Store } from '../../../src/pages/x-overview-page/store';
 
 import * as fixtures from '../../fixtures';
+import { PeriodStore } from '../../../src/stores/period-store';
 
 describe('overview page store', () => {
   let sandbox: sinon.SinonSandbox;
 
   let store: Store;
+  let periodStore: PeriodStore;
   let componentsStore: ComponentsStore;
 
   beforeEach(async () => {
@@ -24,11 +26,14 @@ describe('overview page store', () => {
   });
 
   beforeEach(async () => {
+    periodStore = new PeriodStore();
+
     componentsStore = new ComponentsStore({
       api,
     });
 
     store = new Store({
+      periodStore,
       componentsStore,
     });
 
@@ -40,37 +45,42 @@ describe('overview page store', () => {
     sandbox.restore();
   });
 
-  it('should have a gridItems getter', () => {
+  it('should compute grid items', () => {
     expect(store.gridItems).to.have.lengthOf(1);
     expect(store.gridItems[0]).to.include({
-      id: 'vaadin-button',
       name: 'vaadin-button',
       npmName: '@vaadin/vaadin-button',
     });
   });
 
-  it('should aggregates the grid item totals', () => {
-    expect(store.gridItems[0]).to.include({
-      total: 218,
-      totalOverWeek: 146,
-      totalOverCustomPeriod: 218,
-    });
-
-    expect(store.gridItems[0].weeks).to.have.lengthOf(3);
-    expect(store.gridItems[0].weeks[0]).to.include({
-      date: '15/03/2021',
-      total: 29,
-    });
+  it(`should aggregate the grid item' totals`, () => {
+    expect(store.gridItems[0].total).to.equal(218);
+    expect(store.gridItems[0].totalOverWeek).to.equal(146);
+    expect(store.gridItems[0].totalOverPeriod).to.equal(218);
   });
 
-  // it('should aggregate the totals of items with the custom period', () => {
-  //   // TODO: Implement
-  // })
+  it(`should aggregate the grid item' totals when setting the period`, async () => {
+    periodStore.setPeriod('2021-03-22|2021-03-29');
 
-  it('should set the selected grid items', () => {
+    expect(store.gridItems[0].totalOverPeriod).to.equal(189);
+  });
+
+  it('should select a grid item', () => {
     store.setSelectedGridItems(['vaadin-button']);
 
-    expect(store.selectedGridItemIds.size).to.equal(1);
-    expect(store.selectedGridItemIds.has('vaadin-button')).to.be.true;
+    expect(store.selectedGridItemNames.size).to.equal(1);
+    expect(store.selectedGridItemNames.has('vaadin-button')).to.be.true;
+  });
+
+  it('should not have any chart items by default', () => {
+    expect(store.chartItems).to.have.lengthOf(0);
+  });
+
+  it('should compute chart items when selecting a grid item', () => {
+    store.setSelectedGridItems(['vaadin-button']);
+
+    expect(store.chartItems).to.have.lengthOf(1);
+    expect(store.chartItems[0].weeks).to.have.lengthOf(3);
+    expect(store.chartItems[0].weeks[0].total).to.equal(29);
   });
 });

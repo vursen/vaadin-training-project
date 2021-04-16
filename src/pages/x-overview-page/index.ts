@@ -6,15 +6,17 @@ import '@vaadin/vaadin-grid/vaadin-grid-column-group';
 import '@vaadin/vaadin-grid/vaadin-grid-selection-column';
 
 import { store } from './store';
+import { periodStore } from '../../stores/period-store';
 
 import '../../components/x-date-range-picker';
+import { XDateRangePickerValueChangedEvent } from '../../components/x-date-range-picker';
 
 import './x-grid';
 import './x-chart';
 import './x-autocomplete';
 
 @customElement('x-overview-page')
-export class XOverviewPage extends MobxLitElement {
+export class XOverviewPageElement extends MobxLitElement {
   @internalProperty()
   isLoading = false;
 
@@ -51,6 +53,10 @@ export class XOverviewPage extends MobxLitElement {
     `;
   }
 
+  onDateRangePickerValueChanged(event: XDateRangePickerValueChangedEvent) {
+    periodStore.setPeriod(event.detail.value);
+  }
+
   get isDownloadsVisible() {
     return store.gridItems.length > 0;
   }
@@ -60,7 +66,12 @@ export class XOverviewPage extends MobxLitElement {
       <div class="wrapper">
         <h1 class="title">Overview</h1>
 
-        <x-date-range-picker class="date-range-picker"></x-date-range-picker>
+        <x-date-range-picker
+          class="date-range-picker"
+          .value="${periodStore.period}"
+          .ranges="${periodStore.periods}"
+          @value-changed="${this.onDateRangePickerValueChanged}"
+        ></x-date-range-picker>
 
         <x-overview-page-autocomplete
           class="autocomplete"

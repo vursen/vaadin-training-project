@@ -13,7 +13,7 @@ import { componentsStore } from '../../stores/components-store';
 import { store } from './store';
 
 @customElement('x-overview-page-autocomplete')
-export class XOverviewPageAutocomplete extends MobxLitElement {
+export class XOverviewPageAutocompleteElement extends MobxLitElement {
   @internalProperty()
   isLoading = false;
 

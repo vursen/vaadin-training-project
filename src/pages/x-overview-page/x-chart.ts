@@ -7,7 +7,7 @@ import { ChartElement } from '@vaadin/vaadin-charts';
 import { store } from './store';
 
 @customElement('x-overview-page-chart')
-export class XOverviewPageChart extends MobxLitElement {
+export class XOverviewPageChartElement extends MobxLitElement {
   @query('#chart')
   chart!: ChartElement;
 
