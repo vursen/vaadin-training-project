@@ -1,5 +1,5 @@
 import { MobxLitElement } from '@adobe/lit-mobx';
-import { css, html, customElement, internalProperty } from 'lit-element';
+import { css, html, customElement } from 'lit-element';
 
 import '@vaadin/vaadin-grid';
 import '@vaadin/vaadin-grid/vaadin-grid-column-group';
@@ -17,15 +17,8 @@ import './x-autocomplete';
 
 @customElement('x-overview-page')
 export class XOverviewPageElement extends MobxLitElement {
-  @internalProperty()
-  isLoading = false;
-
   static get styles() {
     return css`
-      .wrapper {
-        padding: var(--lumo-space-m);
-      }
-
       .title {
         margin: 0 0 var(--lumo-space-s);
         font-size: var(--lumo-font-size-xxl);
