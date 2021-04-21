@@ -17,6 +17,10 @@ export class XDefaultLayout extends MobxLitElement {
         margin: 0 var(--lumo-space-s);
         font-size: var(--lumo-font-size-l);
       }
+
+      .content {
+        padding: var(--lumo-space-m);
+      }
     `;
   }
 
@@ -34,7 +38,7 @@ export class XDefaultLayout extends MobxLitElement {
     return html`
       <vaadin-app-layout class="wrapper">
         ${this.isLoading
-          ? html`Loading`
+          ? html`Loading...`
           : html`
               <vaadin-drawer-toggle slot="navbar"></vaadin-drawer-toggle>
 
@@ -44,7 +48,9 @@ export class XDefaultLayout extends MobxLitElement {
                 slot="drawer"
               ></x-default-layout-sidebar>
 
-              <slot></slot>
+              <div class="content">
+                <slot></slot>
+              </div>
             `}
       </vaadin-app-layout>
     `;

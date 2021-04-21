@@ -23,6 +23,9 @@ export class XComponentPageElement extends LitElement {
   @internalProperty()
   location = router.location;
 
+  @internalProperty()
+  isLoading = true;
+
   static get styles() {
     return css`
       .title {
@@ -47,6 +50,16 @@ export class XComponentPageElement extends LitElement {
     `;
   }
 
+  async connectedCallback() {
+    super.connectedCallback();
+
+    const name = String(this.location.params.name);
+
+    await store.fetch(name);
+
+    this.isLoading = false;
+  }
+
   onDateRangePickerValueChanged(event: XDateRangePickerValueChangedEvent) {
     periodStore.setPeriod(event.detail.value);
   }
@@ -54,19 +67,23 @@ export class XComponentPageElement extends LitElement {
   render() {
     return html`
       <div class="wrapper">
-        <h1 class="title">Component: ${store.component.name}</h1>
+        ${this.isLoading
+          ? html`Loading...`
+          : html`
+              <h1 class="title">Component: ${store.component.name}</h1>
 
-        <x-date-range-picker
-          class="date-range-picker"
-          .value="${periodStore.period}"
-          .ranges="${periodStore.periods}"
-          @value-changed="${this.onDateRangePickerValueChanged}"
-        ></x-date-range-picker>
+              <x-date-range-picker
+                class="date-range-picker"
+                .value="${periodStore.period}"
+                .ranges="${periodStore.periods}"
+                @value-changed="${this.onDateRangePickerValueChanged}"
+              ></x-date-range-picker>
 
-        <h2 class="subtitle">Downloads</h2>
+              <h2 class="subtitle">Downloads</h2>
 
-        <x-component-page-chart class="chart"></x-component-page-chart>
-        <x-component-page-grid class="grid"></x-component-page-grid>
+              <x-component-page-chart class="chart"></x-component-page-chart>
+              <x-component-page-grid class="grid"></x-component-page-grid>
+            `}
       </div>
     `;
   }

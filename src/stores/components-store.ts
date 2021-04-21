@@ -32,6 +32,11 @@ export class ComponentsStore {
   componentsMap = new Map<IComponent['name'], IComponent>();
 
   /**
+   * The components promise
+   */
+  componentsPromise: Promise<void> | null = null;
+
+  /**
    * The statistics of components as a map where the key is a component name
    */
   statisticsMap = new Map<IComponentStatistics['name'], IComponentStatistics>();
@@ -60,7 +65,15 @@ export class ComponentsStore {
   /**
    * Fetches components using API and puts into the state
    */
-  async fetchComponents() {
+  fetchComponents() {
+    if (this.componentsPromise) return this.componentsPromise;
+
+    this.componentsPromise = this._fetchComponents();
+
+    return this.componentsPromise;
+  }
+
+  private async _fetchComponents() {
     const { api } = this.context;
 
     const { core } = await api.fetchComponents();
